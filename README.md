@@ -29,9 +29,9 @@ git push -u origin main
 ## 2. Backend: Create the server logic && Configure the DB on MongoDB Altas
 `npm run start` to render the server locally
 
-# 2.1 Create a DB instance on MongoDB Altas (No need to pre-set the schema when creating the DB)
+### 2.1 Create a DB instance on MongoDB Altas (No need to pre-set the schema when creating the DB)
 
-# 2.2 Develop APIs and test them on Postman/REST
+### 2.2 Develop APIs and test them on Postman/REST
 
 
 ## 3. Deploy the Web Application to make it LIVE!! 
