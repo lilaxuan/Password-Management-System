@@ -5,9 +5,9 @@ Tech Stacks: React, Node & Express, JavaScript, MongoDB
 
 ## 1. Front-end: Create the React App
 
-#### 1.1 Create the repo on Github (without Readme)
+1.1 Create the repo on Github (without Readme)
 
-#### 1.2 Initilize the React app:
+1.2 Initilize the React app:
 
 `npm create vite@latest` 
 
@@ -19,14 +19,16 @@ cd into the package directory
 
 `npm run dev`  // Render the webpage on localhost
 
-#### 1.3 Link the local repo to the remote origin
+1.3 Link the local repo to the remote origin
 `git init`
 `git remote add origin https://github.com/yourusername/your-repo-name.git`
 `git add .`
 `git commit -m "commit message"`
 `git push -u origin main`
 
-#### 1.4 Working on the front end logic
+1.4 Working on the front end logic
+
+## 
 
 
 
@@ -68,7 +70,6 @@ Add mongodb and mongorose dependencies in the package.json
 Once the database is created and the connect point is configured; Add the DB connection in the server.cjs
 
 
-#### 2.3 
 
 #### 2.4 Develop APIs and test them on Postman/REST
 
