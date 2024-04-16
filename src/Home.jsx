@@ -1,10 +1,10 @@
 import React from 'react';
-import { useAuth } from './AuthContext';
-import { BrowserRouter as Router, Link, Routes, Route } from 'react-router-dom';
+// import { useAuth } from './AuthContext';
+// import { BrowserRouter as Router, Link, Routes, Route } from 'react-router-dom';
 import './Home.css';
-import LoginPage from './LoginPage';
-import RegisterPage from './RegisterPage';
-import HomePage from './HomePage';
+// import LoginPage from './LoginPage';
+// import RegisterPage from './RegisterPage';
+// import HomePage from './HomePage';
 import Navbar from './Navbar';
 
 
@@ -12,6 +12,7 @@ export default function Home() {
     return (
         <div>
             <Navbar />
+            
         </div>
         // <Router>
         //     <div>
