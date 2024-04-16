@@ -12,7 +12,7 @@ export default function HomePageContent() {
                     and share passwords with other users securely. Start your journey now!</p>
             </section>
             <section>
-                <p className='homepage-text author'>Created by: Jiaxaun Li</p>
+                <p className='homepage-text author'>Created by: Jiaxuan Li</p>
             </section>
         </main>
 

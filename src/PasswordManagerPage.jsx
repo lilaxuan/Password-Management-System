@@ -13,7 +13,7 @@ export default function PasswordManagerPage() {
 
     return (
         <div>
-            <h2>Password Manager</h2>
+            <h2>Password Manager Page</h2>
             {/* Password manager content */}
             <p>Welcome, {currentUser.username}!</p>
         </div>
