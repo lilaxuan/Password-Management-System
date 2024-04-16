@@ -7,6 +7,7 @@ import RegisterPage from './RegisterPage';
 import HomePageContent from './HomePageContent';
 import PasswordManagerPage from './PasswordManagerPage';
 import Navbar from './Navbar';
+import ProfileSettingPage from './ProfileSettingPage';
 
 
 export default function Home() {
@@ -42,6 +43,7 @@ export default function Home() {
                     <Route path="/register" element={<RegisterPage />} />
                     <Route path="/login" element={<LoginPage />} />
                     <Route path="/password-manager" element={<PasswordManagerPage />} />
+                    <Route path="/profile-setup" element={<ProfileSettingPage />} />
                 </Routes>
             </div>
         </Router>

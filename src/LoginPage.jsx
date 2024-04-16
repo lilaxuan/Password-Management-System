@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthContext'; // Import useAuth hook
+import './Common.css';
 
 export default function LoginPage() {
     const [username, setUsername] = useState('');
@@ -45,16 +46,18 @@ export default function LoginPage() {
             <h2>Login</h2>
             {error && <p style={{ color: 'red' }}>{error}</p>}
             <form onSubmit={handleSubmit}>
-                <div>
+                <div className='form-group'>
                     <label>Username: </label>
                     <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} />
                 </div>
-                <div>
+                <div className='form-group'>
                     <label>Password: </label>
                     <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
                 </div>
                 <button type="submit">Login</button>
+
             </form>
-        </div>
+
+        </div >
     );
 }

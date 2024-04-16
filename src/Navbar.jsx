@@ -6,6 +6,7 @@ import LoginPage from './LoginPage';
 import RegisterPage from './RegisterPage';
 import HomePageContent from './HomePageContent';
 import PasswordManagerPage from './PasswordManagerPage';
+import './Common.css';
 
 export default function Navbar() {
     const { user, logout } = useAuth();
@@ -24,6 +25,10 @@ export default function Navbar() {
 
     }
 
+    function handleProfileSetup() {
+        navigate('/profile-setup');
+    }
+
     return (
         <div>
             <nav className="navbar">
@@ -32,7 +37,7 @@ export default function Navbar() {
                     <>
                         <Link to="/" >Home</Link>
                         <button onClick={handleLogout}>Logout</button>
-                        <span className="user-info">{user.username}</span>
+                        <span className="user-info" onClick={handleProfileSetup}>{user.username}</span>
 
                     </>
 

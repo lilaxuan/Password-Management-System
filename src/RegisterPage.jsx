@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import './Common.css';
 
 export default function RegisterPage() {
     const [username, setUsername] = useState('');
@@ -47,15 +48,15 @@ export default function RegisterPage() {
             <h2>Register</h2>
             {error && <p style={{ color: 'red' }}>{error}</p>}
             <form onSubmit={handleSubmit}>
-                <div>
+                <div className='form-group'>
                     <label>Username: </label>
                     <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} />
                 </div>
-                <div>
+                <div className='form-group'>
                     <label>Password: </label>
                     <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
                 </div>
-                <div>
+                <div className='form-group'>
                     <label>Confirm Password: </label>
                     <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
                 </div>

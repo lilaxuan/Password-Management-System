@@ -7,7 +7,7 @@ const AuthContext = createContext();
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(null);
+    const [user, setUser] = useState(null); // Since the user information shall be updated and shared accross all pages, so it's been added in the provider
 
     // Function to log in a user
     const login = (userData) => {
