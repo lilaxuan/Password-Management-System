@@ -4,7 +4,7 @@ import './Navbar.css';
 import { BrowserRouter as Router, Link, Routes, Route } from 'react-router-dom';
 import LoginPage from './LoginPage';
 import RegisterPage from './RegisterPage';
-import HomePage from './HomePage';
+import HomePageContent from './HomePageContent';
 import PasswordManagerPage from './PasswordManagerPage';
 
 export default function Navbar() {
@@ -19,7 +19,7 @@ export default function Navbar() {
 
                 {/* Routes Definitions */}
                 <Routes>
-                    <Route path="/" element={<HomePage />} />
+                    <Route path="/" element={<HomePageContent />} />
                     <Route path="/register" element={<RegisterPage />} />
                     <Route path="/login" element={<LoginPage />} />
                     <Route path="/password-manager" element={<PasswordManagerPage />} />
