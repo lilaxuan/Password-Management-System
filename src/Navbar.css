@@ -1,46 +1,52 @@
-/* Navbar.css */
 .navbar {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     background-color: #333;
-    /* Dark background color */
     color: white;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.5rem 1rem;
-    /* Adjust the spacing inside the navbar */
+    padding: 1rem 2rem;
+    /* Increased left and right padding */
+    margin-right: 2rem;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    /* Optional: adds shadow for depth */
     z-index: 1000;
-    /* Ensure navbar stays above other content */
 }
 
 .navbar a {
     color: white;
     text-decoration: none;
     margin: 0 15px;
+    margin-right: 5rem;
+    border: 1.2px solid #e0e0e0;
+    padding: 8px 12px;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: 500;
+    transition: background-color 0.3s, color 0.3s;
 }
 
 .navbar a:hover {
-    text-decoration: underline;
+    color: lightgray;
 }
 
-/* Styles for the logout button to make it visually distinct */
-.navbar button {
-    padding: 8px 16px;
-    background-color: red;
-    color: white;
+.login-link {
+    margin-right: 4rem;
+}
+
+.logout-button {
+    display: block;
+    width: 10%;
+    padding: 10px;
+    background-color: #007bff;
+    color: #fff;
     border: none;
-    border-radius: 4px;
+    border-radius: 5px;
     cursor: pointer;
 }
 
-.navbar button:hover {
-    background-color: darkred;
-}
 
 /* Style for the username to make it */
 

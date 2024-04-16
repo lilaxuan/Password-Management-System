@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthContext'; // Import useAuth hook
-import './Common.css';
+// import './Common.css';
+import './LoginPage.css';
 
 export default function LoginPage() {
     const [username, setUsername] = useState('');

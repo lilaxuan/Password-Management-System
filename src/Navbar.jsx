@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { useAuth } from './AuthContext';
 import './Navbar.css';
 import { BrowserRouter as Router, Link, Routes, Route, useNavigate } from 'react-router-dom';
-import LoginPage from './LoginPage';
-import RegisterPage from './RegisterPage';
-import HomePageContent from './HomePageContent';
-import PasswordManagerPage from './PasswordManagerPage';
-import './Common.css';
+// import LoginPage from './LoginPage';
+// import RegisterPage from './RegisterPage';
+// import HomePageContent from './HomePageContent';
+// import PasswordManagerPage from './PasswordManagerPage';
+// import './Common.css';
 
 export default function Navbar() {
     const { user, logout } = useAuth();
@@ -36,7 +36,7 @@ export default function Navbar() {
                     // when user is logged in (not null)
                     <>
                         <Link to="/" >Home</Link>
-                        <button onClick={handleLogout}>Logout</button>
+                        <button className='logout-button' onClick={handleLogout}>Logout</button>
                         <span className="user-info" onClick={handleProfileSetup}>{user.username}</span>
 
                     </>
@@ -46,19 +46,21 @@ export default function Navbar() {
                     <>
                         <Link to="/" >Home</Link>
                         <Link to="/register" >Register</Link>
-                        <Link to="/login">Login</Link>
+                        <Link to="/login" className="login-link">Login</Link>
                     </>
                 )}
 
             </nav>
 
             {/* if the logged out message is not null, display the log out messgae */}
-            {logoutMessage && (
-                <div className="logout-message">
-                    {logoutMessage}
-                </div>
-            )}
-        </div>
+            {
+                logoutMessage && (
+                    <div className="logout-message">
+                        {logoutMessage}
+                    </div>
+                )
+            }
+        </div >
 
         // <Router>
         //     <div>
@@ -94,25 +96,3 @@ export default function Navbar() {
         // </Router>
     );
 };
-
-
-
-// export default function Navbar() {
-//     const { user, logout } = useAuth();
-
-//     return (
-//         <nav>
-//             <a href="/">Home</a>
-//             {user ? (
-//                 <>
-//                     <button onClick={logout}>Log Out</button>
-//                     <span style={{ fontStyle: 'italic', marginLeft: '10px' }}>{user.username}</span>
-//                 </>
-//             ) : (
-//                 <a href="/login">Login/Register</a>
-//             )}
-//         </nav>
-//     );
-// };
-
-
