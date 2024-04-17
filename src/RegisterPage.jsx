@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import './Common.css';
 
 export default function RegisterPage() {
@@ -13,16 +14,28 @@ export default function RegisterPage() {
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
+    const [users, setAllUsers] = useState([]);
+
     // Dummy users list for demonstration. Replace this with your backend call.
     // Todo: Retrive all users from database!!!! 
-    const users = JSON.parse(localStorage.getItem('users')) || [];
+    // const users = JSON.parse(localStorage.getItem('users')) || [];
+    async function getAllUsers() {
+        const response = await axios.get('/api/users');
+        console.log('hihi-getAllUsers: ', response);
+        setAllUsers(response.data);
+    }
 
-    const handleSubmit = (e) => {
+    useEffect(() => {
+        getAllUsers();
+    }, []);
+
+
+    async function handleSubmit(e) {
         e.preventDefault();
         setError('');
 
-        if (!username || !password || !confirmPassword) {
-            setError('Username and passwords cannot be empty.');
+        if (!username || !firstname || !lastname || !email || !phone || !password || !confirmPassword) {
+            setError('The information cannot be empty.');
             return;
         }
 
@@ -38,12 +51,14 @@ export default function RegisterPage() {
             return;
         }
 
-        const newUser = { username, password };
+        // const newUser = { username, password };
+        const newUser = { username, firstname, lastname, email, phone, password };
         // Todo2: Insert the new user to the database
-        users.push(newUser);
-        localStorage.setItem('users', JSON.stringify(users));
-        // Simulate user login
-        localStorage.setItem('currentUser', JSON.stringify(newUser));
+        // users.push(newUser);
+        // localStorage.setItem('users', JSON.stringify(users));
+        // // Simulate user login
+        // localStorage.setItem('currentUser', JSON.stringify(newUser));
+        await axios.post('/api/users', newUser); // newUser will be passed in the reuqest body
         navigate('/password-manager');
     };
 
