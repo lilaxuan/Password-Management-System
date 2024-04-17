@@ -41,11 +41,11 @@ const userSchema = new Schema({
         type: String,
         required: true
     },
-    // profileImageUrl: {
-    //     type: String,
-    //     required: false,
-    //     default: 'http://localhost:8000/default-avatar.png'
-    // }
+    profileImageUrl: {
+        type: String,
+        required: false,
+        default: 'http://localhost:8000/default-avatar.png'
+    }
 });
 
 // Mongoose will create a new model. This model will correspond to a collection named users in the MongoDB database 

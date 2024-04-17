@@ -23,6 +23,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api/passwords', passwords); // defined the base root url for the API
 app.use('/api/users', users); // defined the base root url for the API
 
+app.use(express.static('public')); // use static files in public
+
 app.get('/', function (req, res) {
     res.send("This is the FIRST GET request")
 });

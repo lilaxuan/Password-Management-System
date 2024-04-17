@@ -5,27 +5,19 @@ import axios from 'axios';
 
 export default function ProfileSettingPage() {
     const { user } = useAuth();
-    // const [formData, setFormData] = useState({
-    //     username: user.username || '',
-    //     firstName: user.firstName || '',
-    //     lastName: user.lastName || '',
-    //     email: user.email || '',
-    //     phone: user.phone || '',
-    //     password: user.password || '',
-    //     profileImage: null // New field for storing uploaded profile image
-    // });
-
-    console.log('current user is: ', user);
-    console.log('current user username is: ', user.username);
+    // if (user) {
+    //     console.log('current user is: ', user);
+    //     console.log('current user username is: ', user.username);
+    // }
     // hold the data in the form
     const [formData, setFormData] = useState({
-        username: user.username,
-        firstname: user.firstname,
-        lastname: user.lastname,
-        email: user.email,
-        phone: user.phone,
-        password: user.password,
-        profileImage: null // New field for storing uploaded profile image
+        username: user ? user.username : '',
+        firstname: user ? user.firstname : '',
+        lastname: user ? user.lastname : '',
+        email: user ? user.email : '',
+        phone: user ? user.phone : '',
+        password: user ? user.password : '',
+        profileImage: user ? user.profileImage : null
     });
 
     function handleChange(event) {
@@ -44,21 +36,34 @@ export default function ProfileSettingPage() {
         }));
     }
 
-    function handleSubmit(event) {
+    async function handleSubmit(event) {
         event.preventDefault();
-        // Add logic to update user profile with formData
-        console.log('Form data submitted:', formData);
-        // You may want to call an API to update user profile here
-    }
-
-    async function submitProfileChange() {
-        await axios.put("/api/users", formData);
+        try {
+            // Update users profile based on user's id
+            const userId = user._id;
+            const response = await axios.put(`/api/users/${userId}`, formData);
+            console.log("Update successful:", response.data);
+        } catch (error) {
+            console.error("Error updating user:", error.response ? error.response.data : error.message);
+        }
+        console.log('Profile has been updated and form data submitted:', formData);
+        navigate('/password-manager');
     }
 
     return (
         <div className="form-content">
             <h2>Profile Settings</h2>
             <form onSubmit={handleSubmit}>
+                <div className="form-group">
+                    <label htmlFor="username">User Name:</label>
+                    <input
+                        type="text"
+                        id="username"
+                        name="username"
+                        value={formData.username}
+                        onChange={handleChange}
+                    />
+                </div>
                 <div className="form-group">
                     <label htmlFor="firstname">First Name:</label>
                     <input
@@ -122,7 +127,7 @@ export default function ProfileSettingPage() {
                     />
                 </div>
 
-                <button type="submit" onClick={submitProfileChange}>Save Changes</button>
+                <button type="submit">Save Changes</button>
             </form>
         </div>
     );
