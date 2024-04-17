@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthContext'; // Import useAuth hook
-// import './Common.css';
-import './LoginPage.css';
+import './Common.css';
+import axios from 'axios';
 
 export default function LoginPage() {
     const [username, setUsername] = useState('');
@@ -10,12 +10,23 @@ export default function LoginPage() {
     const [error, setError] = useState('');
     const navigate = useNavigate();
     const { login, logout, user } = useAuth(); // Get login function from useAuth hook, can import 1 or 2 or all attributes in the ContextProvider
+    const [users, setAllUsers] = useState([]);
 
-    const handleSubmit = (e) => {
+    async function getAllUsers() {
+        const response = await axios.get('/api/users');
+        setAllUsers(response.data);
+    }
+
+    useEffect(() => {
+        getAllUsers();
+    }, []);
+
+    async function handleSubmit(e) {
         e.preventDefault();
         setError('');
 
-        const users = JSON.parse(localStorage.getItem('users')) || [];
+        // const users = JSON.parse(localStorage.getItem('users')) || [];
+
         const foundUser = users.find(user => user.username === username); // an user object with username + password if it can be found in the storage
 
         if (!username || !password) {
@@ -30,8 +41,8 @@ export default function LoginPage() {
 
         // Simulate user login
         // localStorage.setItem('currentUser', JSON.stringify(user));
-        console.log('found user: ', foundUser);
-        login(foundUser);
+        login(foundUser); // set user data as not null via the context provider
+
         // If user is logged in, navigate to the password manager page;
         navigate('/password-manager'); // navigate and useNavigate are a couple; useNavigate defined in the PasswordManagerPage
     };
