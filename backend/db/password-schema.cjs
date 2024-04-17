@@ -2,19 +2,31 @@ const mongoose = require('mongoose');
 const schema = mongoose.Schema;
 
 const passwordSchema = new schema({
-    username: {
-        type: String,
-        required: true,
-        unique: true
+    // link each password records to a User object
+    userId: {
+        type: Schema.Types.ObjectId,
+        ref: 'User', // links to 'users' table in the db
+        required: true
     },
     url: {
         type: String,
         required: true,
-        unique: true
+    },
+    username: {
+        type: String,
+        required: true,
     },
     password: {
         type: String,
         required: true
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now
+    },
+    updatedAt: {
+        type: Date,
+        default: Date.now
     }
 });
 
