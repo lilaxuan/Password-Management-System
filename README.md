@@ -47,7 +47,7 @@ Run `npm run start` to render the server locally to check if the server is up an
 
 ![Alt text](image-3.png)
 
-#### 2.2 Create a DB instance on MongoDB Altas (No need to pre-set the schema when creating the DB)
+#### 2.2 Create a DB instance on MongoDB Altas (No need to pre-set the schema when creating the DB & the table will be automatically created once we insert a new record to the DB; If we want to change the schema in the code, then we need to delete the table in db to re-generate a new one)
 Create a project in MongoDB Altas firstly (One project can only have one free tier db); 
 
 Create a deployment/cluster/database instance in the project 
@@ -72,8 +72,11 @@ Once the database is created and the connect point is configured; Add the DB con
 
 
 #### 2.4 Develop APIs and test them on Postman/REST
+PasswordSchema - Sample Data
+![Alt text](image-4.png)
 
-
+UserSchema - Sample Data
+![Alt text](image-5.png)
 
 
 #### 2.5 Call APIs in Front End

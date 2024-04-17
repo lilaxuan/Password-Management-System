@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const PasswordModel = require('./db/password.model.cjs')
 
+// Get all password records in DB
 // http://localhost:8000/api/passwords
 router.get('/', async (req, res) => {
     try {
@@ -12,9 +13,9 @@ router.get('/', async (req, res) => {
     }
 });
 
-// http://localhost:8000/api/passwords?id 
+// GET password by id
+// http://localhost:8000/api/passwords/661f6451470c3f5e1c00954e
 // const id = req.params.userId
-// GET all passwords for a specific user
 router.get('/:id', async (req, res) => { // In the Get request function header, it defines the request param 'userId' (optional)
     try {
         const id = req.params.id;
@@ -27,16 +28,21 @@ router.get('/:id', async (req, res) => { // In the Get request function header, 
 });
 
 // GET a password by URL and userId
-// http://localhost:8000/api/passwords/search/www.google.com
-// http://localhost:8000/api/passwords/search?url=example.com&userId=123  (request param is optional)
-router.get('/search/:url', async (req, res) => {
+// for router.get('/search/:url', async (req, res) =>  http://localhost:8000/api/passwords/search/www.google.com 
+// for router.get('/search/', async (req, res) => http://localhost:8000/api/passwords/search?url=www.google.com&userId=661f61174a6e192cc2d6dbcd  
+// for router.get('/search/:url/:userId', async (req, res) => http://localhost:8000/api/passwords/search/www.google.com/661f61174a6e192cc2d6dbcd
+router.get('/search/:url/:userId', async (req, res) => {
     try {
+        // const url = req.params.url;
         // const { url, userId } = req.query;
-        const url = req.params.url;
-        // const password = await PasswordModel.findOne({ url, userId }).exec();
-        // const password = await PasswordModel.getPasswordByUrl(url, userId);
-        // Todo:::!!!! url + userId?? 
-        const password = await PasswordModel.getPasswordByUrl(url);
+        const { url, userId } = req.params;
+        if (!url || !userId) {
+            return res.status(400).send("Both URL and User ID are required.");
+        }
+
+        const password = await PasswordModel.getPasswordByUrl(url, userId);
+        // const password = await PasswordModel.getPasswordByUrl(url);
+
         if (password) {
             res.json(password);
         } else {
@@ -51,7 +57,7 @@ router.get('/search/:url', async (req, res) => {
 // http://localhost:8000/api/passwords
 // request body json: 
 // {
-//     // "userId": "",
+//     "userId": "661f644f470c3f5e1c00954c",
 //     "url": "www.google.com",
 //     "username": "xianer",
 //     "password": "123456"

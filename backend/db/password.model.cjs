@@ -17,13 +17,13 @@ function getPasswordById(id) {
     return PasswordModel.findById(id).exec();
 }
 
-// function getPasswordByUrl(url, userId) {
-//     return PasswordModel.findOne({ url, userId }).exec();
-// }
-
-function getPasswordByUrl(url) {
-    return PasswordModel.findOne({ url }).exec();
+function getPasswordByUrl(url, userId) {
+    return PasswordModel.findOne({ url, userId }).exec();
 }
+
+// function getPasswordByUrl(url) {
+//     return PasswordModel.findOne({ url }).exec();
+// }
 
 function deletePassword(id) {
     return PasswordModel.deleteOne({ _id: id })

@@ -8,9 +8,9 @@ function insertUser(user) {
     return UserModel.create(user);
 }
 
-// function getAllUsers() {
-//     return UserModel.find().exec();
-// }
+function getAllUsers() {
+    return UserModel.find().exec();
+}
 
 function getUserById(id) {
     return UserModel.findById(id).exec();
@@ -31,6 +31,7 @@ function updateUser(id, user) {
 // }
 
 module.exports = {
+    getAllUsers,
     insertUser,
     getUserById,
     updateUser,
