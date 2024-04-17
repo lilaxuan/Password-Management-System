@@ -1,6 +1,6 @@
 const model = require('mongoose').model;
 
-const PasswordSchema = require('./password-schema.cjs');
+const PasswordSchema = require('./password.schema.cjs');
 
 const PasswordModel = model('Password', PasswordSchema); // The model `Password` corresponds to the collection of users in the database defined in the schema
 
@@ -8,12 +8,21 @@ function addNewPassword(password) {
     return PasswordModel.create(password);
 }
 
-// function getAllPasswords() {
-//     return PasswordModel.find().exec();
+function getAllPasswords() {
+    return PasswordModel.find().exec();
+}
+
+// id is auto-generated in mongodb
+function getPasswordById(id) {
+    return PasswordModel.findById(id).exec();
+}
+
+// function getPasswordByUrl(url, userId) {
+//     return PasswordModel.findOne({ url, userId }).exec();
 // }
 
-function getPasswordByUsername(id) {
-    return PasswordModel.findById(id).exec();
+function getPasswordByUrl(url) {
+    return PasswordModel.findOne({ url }).exec();
 }
 
 function deletePassword(id) {
@@ -31,8 +40,10 @@ function updatePassword(id, password) {
 // }
 
 module.exports = {
+    getAllPasswords,
     addNewPassword,
-    getPasswordByUsername,
+    getPasswordById,
+    getPasswordByUrl,
     updatePassword,
     deletePassword
 }

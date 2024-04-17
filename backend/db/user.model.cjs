@@ -1,6 +1,6 @@
 const model = require('mongoose').model;
 
-const UserSchema = require('./user-schema.cjs');
+const UserSchema = require('./user.schema.cjs');
 
 const UserModel = model('User', UserSchema); // The model `User` corresponds to the collection of users in the database defined in the schema
 

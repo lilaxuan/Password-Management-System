@@ -1,12 +1,11 @@
 const mongoose = require('mongoose');
-const schema = mongoose.Schema;
+const Schema = mongoose.Schema;
 
-const passwordSchema = new schema({
-    // link each password records to a User object
+const passwordSchema = new Schema({
     userId: {
-        type: Schema.Types.ObjectId,
+        type: Schema.Types.ObjectId, // unique id auto-generated in MongoDB for each user, it's different as username 
         ref: 'User', // links to 'users' table in the db
-        required: true
+        // required: true
     },
     url: {
         type: String,
@@ -33,4 +32,5 @@ const passwordSchema = new schema({
 // Mongoose will create a new model. This model will correspond to a collection named users in the MongoDB database 
 // (Mongoose will automatically convert the model name User to lowercase and pluralize it (passwords) as the collection name). 
 // If the collection does not exist, it will be created when you first insert the document.
-module.exports = mongoose.model('Password', passwordSchema);
+// module.exports = mongoose.model('Password', passwordSchema);
+module.exports = passwordSchema;

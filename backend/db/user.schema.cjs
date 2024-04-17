@@ -13,9 +13,9 @@
 // }, { collection: 'pokemonSpr2024' });
 
 const mongoose = require('mongoose');
-const schema = mongoose.Schema;
+const Schema = mongoose.Schema;
 
-const userSchema = new schema({
+const userSchema = new Schema({
     // userId: {
     //     type: String,
     //     required: true
@@ -51,4 +51,5 @@ const userSchema = new schema({
 // Mongoose will create a new model. This model will correspond to a collection named users in the MongoDB database 
 // (Mongoose will automatically convert the model name User to lowercase and pluralize it (users) as the collection name). 
 // If the collection does not exist, it will be created when you first insert the document.
-module.exports = mongoose.model('User', userSchema);
+// module.exports = mongoose.model('User', userSchema);
+module.exports = userSchema;
