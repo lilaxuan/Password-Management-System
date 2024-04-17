@@ -1,14 +1,30 @@
 import React, { useState } from 'react';
 import { useAuth } from './AuthContext';
 import './Common.css';
+import axios from 'axios';
 
 export default function ProfileSettingPage() {
     const { user } = useAuth();
+    // const [formData, setFormData] = useState({
+    //     username: user.username || '',
+    //     firstName: user.firstName || '',
+    //     lastName: user.lastName || '',
+    //     email: user.email || '',
+    //     phone: user.phone || '',
+    //     password: user.password || '',
+    //     profileImage: null // New field for storing uploaded profile image
+    // });
+
+    console.log('current user is: ', user);
+    console.log('current user username is: ', user.username);
+    // hold the data in the form
     const [formData, setFormData] = useState({
-        firstName: user.firstName || '',
-        lastName: user.lastName || '',
-        email: user.email || '',
-        // Add more fields as needed
+        username: user.username,
+        firstname: user.firstname,
+        lastname: user.lastname,
+        email: user.email,
+        phone: user.phone,
+        password: user.password,
         profileImage: null // New field for storing uploaded profile image
     });
 
@@ -35,27 +51,31 @@ export default function ProfileSettingPage() {
         // You may want to call an API to update user profile here
     }
 
+    async function submitProfileChange() {
+        await axios.put("/api/users", formData);
+    }
+
     return (
         <div className="form-content">
             <h2>Profile Settings</h2>
             <form onSubmit={handleSubmit}>
                 <div className="form-group">
-                    <label htmlFor="firstName">First Name:</label>
+                    <label htmlFor="firstname">First Name:</label>
                     <input
                         type="text"
-                        id="firstName"
-                        name="firstName"
-                        value={formData.firstName}
+                        id="firstname"
+                        name="firstname"
+                        value={formData.firstname}
                         onChange={handleChange}
                     />
                 </div>
                 <div className="form-group">
-                    <label htmlFor="lastName">Last Name:</label>
+                    <label htmlFor="lastname">Last Name:</label>
                     <input
                         type="text"
-                        id="lastName"
-                        name="lastName"
-                        value={formData.lastName}
+                        id="lastname"
+                        name="lastname"
+                        value={formData.lastname}
                         onChange={handleChange}
                     />
                 </div>
@@ -69,7 +89,27 @@ export default function ProfileSettingPage() {
                         onChange={handleChange}
                     />
                 </div>
-                {/* Add more fields as needed */}
+                <div className="form-group">
+                    <label htmlFor="phone">Phone:</label>
+                    <input
+                        type="text"
+                        id="phone"
+                        name="phone"
+                        value={formData.phone}
+                        onChange={handleChange}
+                    />
+                </div>
+                <div className="form-group">
+                    <label htmlFor="password">Password:</label>
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        value={formData.password}
+                        onChange={handleChange}
+                    />
+                </div>
+
 
                 <div className="form-group">
                     <label htmlFor="profileImage">Profile Image:</label>
@@ -82,7 +122,7 @@ export default function ProfileSettingPage() {
                     />
                 </div>
 
-                <button type="submit">Save Changes</button>
+                <button type="submit" onClick={submitProfileChange}>Save Changes</button>
             </form>
         </div>
     );
