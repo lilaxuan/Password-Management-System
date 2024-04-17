@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useAuth } from './AuthContext';
-import './ProfileSettingPage.css'; // Assuming you have a CSS file for styling
 import './Common.css';
 
 export default function ProfileSettingPage() {
@@ -37,7 +36,7 @@ export default function ProfileSettingPage() {
     }
 
     return (
-        <div className="profile-setting-page">
+        <div className="form-content">
             <h2>Profile Settings</h2>
             <form onSubmit={handleSubmit}>
                 <div className="form-group">

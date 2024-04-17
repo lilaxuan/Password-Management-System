@@ -43,9 +43,9 @@ export default function LoginPage() {
 
     // If user is not logged in, render the login form
     return (
-        <div>
+        <div className='form-content'>
             <h2>Login</h2>
-            {error && <p style={{ color: 'red' }}>{error}</p>}
+            {error && <p className='error-message'>{error}</p>}
             <form onSubmit={handleSubmit}>
                 <div className='form-group'>
                     <label>Username: </label>

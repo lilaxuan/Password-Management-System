@@ -4,6 +4,10 @@ import './Common.css';
 
 export default function RegisterPage() {
     const [username, setUsername] = useState('');
+    const [firstname, setFirstname] = useState('');
+    const [lastname, setLastname] = useState('');
+    const [phone, setPhone] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState('');
@@ -44,13 +48,29 @@ export default function RegisterPage() {
     };
 
     return (
-        <div>
+        <div className='form-content '>
             <h2>Register</h2>
             {error && <p style={{ color: 'red' }}>{error}</p>}
             <form onSubmit={handleSubmit}>
                 <div className='form-group'>
                     <label>Username: </label>
                     <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} />
+                </div>
+                <div className='form-group'>
+                    <label>Firstname: </label>
+                    <input type="text" value={firstname} onChange={(e) => setFirstname(e.target.value)} />
+                </div>
+                <div className='form-group'>
+                    <label>Lastname: </label>
+                    <input type="text" value={lastname} onChange={(e) => setLastname(e.target.value)} />
+                </div>
+                <div className='form-group'>
+                    <label>Email: </label>
+                    <input type="text" value={email} onChange={(e) => setEmail(e.target.value)} />
+                </div>
+                <div className='form-group'>
+                    <label>Phone: </label>
+                    <input type="text" value={phone} onChange={(e) => setPhone(e.target.value)} />
                 </div>
                 <div className='form-group'>
                     <label>Password: </label>
