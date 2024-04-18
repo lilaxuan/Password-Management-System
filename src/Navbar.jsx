@@ -25,9 +25,13 @@ export default function Navbar() {
 
     }
 
-    function handleProfileSetup() {
-        navigate('/profile-setup');
-    }
+    // function handleProfileSetup() {
+    //     navigate('/profile-setup');
+    // }
+
+    const handleDropdownChange = (event) => {
+        navigate(event.target.value);
+    };
 
     return (
         <div>
@@ -37,8 +41,14 @@ export default function Navbar() {
                     <>
                         <Link to="/" >Home</Link>
                         <button className='logout-button' onClick={handleLogout}>Logout</button>
-                        <span className="user-info" onClick={handleProfileSetup}>{user.username}</span>
-
+                        {/* <span className="user-info" onClick={handleProfileSetup}>{user.username}</span> */}
+                        <span className="user-info">
+                            <select onChange={handleDropdownChange} defaultValue="">
+                                <option value="" disabled>{user.username}</option>
+                                <option value="/password-manager">Password Manager</option>
+                                <option value="/profile-setup">Profile Setting</option>
+                            </select>
+                        </span>
                     </>
 
                 ) : (
