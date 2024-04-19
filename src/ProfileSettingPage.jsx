@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from './AuthContext';
+import { useNavigate } from 'react-router-dom';
 import './Common.css';
 import axios from 'axios';
 
@@ -9,6 +10,8 @@ export default function ProfileSettingPage() {
     //     console.log('current user is: ', user);
     //     console.log('current user username is: ', user.username);
     // }
+
+    const navigate = useNavigate();
     // hold the data in the form
     const [formData, setFormData] = useState({
         username: user ? user.username : '',
