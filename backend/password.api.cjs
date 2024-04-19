@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const PasswordModel = require('./db/password.model.cjs')
+const mongoose = require('mongoose');
+const PasswordModel = require('./db/password.model.cjs');
+console.log(PasswordModel);
+
 
 // Get all password records in DB
 // http://localhost:8000/api/passwords
@@ -26,6 +29,52 @@ router.get('/:id', async (req, res) => { // In the Get request function header, 
         res.status(500).json({ message: error.message });
     }
 });
+
+// GET all passwords for a specific user, distinguish with get request by password id via url
+// http://localhost:8000/api/passwords/users/
+// router.get('/users/:userId', async (req, res) => {
+//     console.log('Get passwords by user id!!!');
+//     try {
+//         const userId = req.params.userId;
+//         if (!mongoose.Types.ObjectId.isValid(userId)) {
+//             return res.status(400).send('Invalid user ID');
+//         }
+
+//         console.log('userId is: ', userId);
+//         const passwords = await PasswordModel.find({ userId: userId }).exec();
+//         // const userIdObject = new mongoose.Types.ObjectId(userId);
+//         // const passwords = await PasswordModel.find({ userId }).exec();
+//         // const passwords = await PasswordModel.find({ userId: userIdObject }).exec();
+//         // const passwords = await PasswordModel.getPasswordByUserId(userIdObject);
+//         res.json(passwords);
+//     } catch (error) {
+//         console.error('Failed to retrieve passwords', error);
+//         res.status(500).send('Error retrieving passwords');
+//     }
+// });
+
+router.get('/users/:userId', async (req, res) => {
+    const { userId } = req.params;
+    console.log('Fetching passwords for userId---:', userId);
+
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+        return res.status(400).send('Invalid user ID format');
+    }
+
+    try {
+        // const passwords = await PasswordModel.find({ userId });
+        const passwords = await PasswordModel.getPasswordByUserId(userId);
+        if (passwords.length === 0) {
+            return res.status(404).json({ message: "No passwords found for this user." });
+        }
+        res.status(200).json(passwords);
+    } catch (error) {
+        console.error('Error retrieving passwords for userId:', userId, error);
+        res.status(500).json({ message: "Error retrieving passwords", error: error.message });
+    }
+});
+
+
 
 // GET a password by URL and userId
 // for router.get('/search/:url', async (req, res) =>  http://localhost:8000/api/passwords/search/www.google.com 

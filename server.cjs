@@ -1,6 +1,7 @@
 const express = require('express');
 const passwords = require('./backend/password.api.cjs');
-const users = require('./backend/user.api.cjs')
+const users = require('./backend/user.api.cjs');
+const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 // const cookieParser = require('cookie-parser') // todo: import later on
 
@@ -22,6 +23,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use('/api/passwords', passwords); // defined the base root url for the API
 app.use('/api/users', users); // defined the base root url for the API
+app.use(bodyParser.json());
 
 app.use(express.static('public')); // use static files in public
 
