@@ -8,13 +8,14 @@ export default function PasswordManagerPage() {
     const navigate = useNavigate(); // navigate accross different pages.
     // Todo: retrieve the current user
     // const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-    const { user } = useAuth();
+    const { user, login } = useAuth();
 
     const [url, setUrl] = useState('');
     const [password, setPassword] = useState([]);
     const [passowrdsList, setPasswordsList] = useState([]); // the elements to be rendered on the page
 
     if (!user) {
+        console.log('user is none ------');
         navigate('/login');
         return null;
     }
@@ -24,6 +25,8 @@ export default function PasswordManagerPage() {
         const response = await axios.get(`/api/passwords/users/${userId}`);
         console.log('allPasswordsRecords is : ', response);
         const allPasswordsRecords = response.data;
+
+        // Password records elements
         const passwordsListElement = [];
         for (let i = 0; i < allPasswordsRecords.length; i++) {
             // let newObj = {
@@ -32,12 +35,12 @@ export default function PasswordManagerPage() {
             // };
             // passwordsListElement.push(newObj);
             passwordsListElement.push(
-                <div className='passwords-list'>
+                <div className='password-list'>
                     <li>
                         url: {allPasswordsRecords[i].url} -
                         password: {allPasswordsRecords[i].password} -
-                        <button> Edit </button> -
-                        <button> Delete </button>
+                        <button className='password-edit-button'> Edit </button> -
+                        <button className='password-edit-button'> Delete </button>
                     </li>
                 </div>);
         }
@@ -49,12 +52,15 @@ export default function PasswordManagerPage() {
         getAllPasswordsRecords();
     }, []);
 
-    async function handleSubmit() {
+    async function handleSubmit(event) {
+        event.preventDefault(); // prevent page reloading to reset user to be null; 
+
         const userId = user._id;
         const username = user.username;
         const newPasswordRecord = { userId, url, username, password }; // does the order matters??? 
         console.log('the new added password record is: ', newPasswordRecord);
         await axios.post('/api/passwords', newPasswordRecord);
+        console.log('hihi-current user is: ', user);
         getAllPasswordsRecords();
     }
 
@@ -66,11 +72,10 @@ export default function PasswordManagerPage() {
                 <h2>Password Manager Page</h2>
                 <p>Welcome, {user.username}!</p>
             </div>
-            <div>
+            <div className='passwords-list'>
                 {passowrdsList}
             </div>
-
-            <form onSubmit={handleSubmit}>
+            <form className="create-password-container" onSubmit={handleSubmit}>
                 <div>
                     <label>URL:</label>
                     <input type="text" value={url} onChange={e => setUrl(e.target.value)} required />
