@@ -9,7 +9,7 @@ const path = require('path')
 
 
 // Notes: When Creating db, no need to pre-set up schema
-const mongoDBEndpoint = 'mongodb+srv://admin:xianer123@password-management-sys.cacpwcb.mongodb.net/?retryWrites=true&w=majority&appName=Password-Management-System-DB'
+const mongoDBEndpoint = 'mongodb+srv://admin:xianer123@password-management-sys.cacpwcb.mongodb.net/?retryWrites=true&w=majority&appName=Password-Management-System-DBssl=false';
 mongoose.connect(mongoDBEndpoint, {
     useNewUrlParser: true,
 })

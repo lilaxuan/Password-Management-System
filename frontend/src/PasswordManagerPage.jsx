@@ -134,6 +134,7 @@ export default function PasswordManagerPage() {
         // }, 1000); // Hide message after 1 second
         await getAllPasswordsRecords(); // cache exists so that we have to refresh the page to get the updated records!!!
         // console.log('finish re-retriving all passwords');
+        onCancel(); // clears input boxes
     }
 
 
