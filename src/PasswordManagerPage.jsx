@@ -29,10 +29,22 @@ export default function PasswordManagerPage() {
             navigate('/login');
             return null;
         }
+
         console.log('current user - getAllPasswordsRecords: ', user);
         const userId = user._id;
         console.log('userid - getAllPasswordsRecords: ', userId);
+
         const response = await axios.get(`/api/passwords/users/${userId}`);
+        // avoid cache!!
+        // const response = await axios.get(`/api/passwords/users/${userId}`, {
+        //     headers: {
+        //         'Cache-Control': 'no-cache, no-store, must-revalidate', // Prevents caching of the response
+        //         'Pragma': 'no-cache', // HTTP 1.0 backward compatibility
+        //         'Expires': '0' // Proxies
+        //     }
+        // });
+
+
         console.log('allPasswordsRecords is - getAllPasswordsRecords: ', response);
         const allPasswordsRecords = response.data;
 
@@ -46,12 +58,13 @@ export default function PasswordManagerPage() {
             // passwordsListElement.push(newObj);
             passwordsListElement.push(
                 <div className='password-list'>
-                    <li>
-                        url: {allPasswordsRecords[i].url} -
-                        password: {allPasswordsRecords[i].password} -
-                        <button onClick={() => editPasswordRecord(allPasswordsRecords[i]._id, allPasswordsRecords[i].url, allPasswordsRecords[i].password)}> Edit </button> -
+                    <div className='flex-item-container'>
+                        <p> {i + 1}. </p>
+                        <label> {allPasswordsRecords[i].url} </label>
+                        <label>  {allPasswordsRecords[i].password} </label>
+                        <button onClick={() => editPasswordRecord(allPasswordsRecords[i]._id, allPasswordsRecords[i].url, allPasswordsRecords[i].password)}> Edit </button>
                         <button onClick={() => deletePasswordRecord(allPasswordsRecords[i]._id)}> Delete </button>
-                    </li>
+                    </div>
                 </div>);
         }
         console.log('passwordsListElement: ', passwordsListElement);
@@ -73,15 +86,25 @@ export default function PasswordManagerPage() {
         // based on editing state, determine whether it's update or create new
         if (editingState === true) {
             await axios.put(`/api/passwords/${passwordId}`, newPasswordRecord);
-            setEditingState(false);
-            setPassword('')
-            setUrl('');
+
+            // setEditingState(false);
+            // setPassword('')
+            // setUrl('');
         } else {
             await axios.post('/api/passwords', newPasswordRecord);
         }
 
+        onCancel(); // set back to initial state
+
         console.log('hihi-current user is: ', user);
-        getAllPasswordsRecords();
+        getAllPasswordsRecords(); // When last password record of the users's deleted, it will throw error due to the api check the passwords length
+    }
+
+    function onCancel() {
+        setEditingState(false);
+        setUrl('');
+        setPassword('');
+
     }
 
     // Set editing state, but sbumission depends on the submit changes button!! 
@@ -105,11 +128,12 @@ export default function PasswordManagerPage() {
         console.log('start deleteing');
         await axios.delete(`/api/passwords/${passwordRecordId}`);  // await axios.delete('/api/passwords/' + passwordRecordId);
         console.log('The password record has been deleted successfully!');
+        // setDeletedState(true);
         // setTimeout(() => {
         //     getAllPasswordsRecords();
         // }, 1000); // Hide message after 1 second
-        await getAllPasswordsRecords();
-        console.log('finish re-retriving all passwords');
+        await getAllPasswordsRecords(); // cache exists so that we have to refresh the page to get the updated records!!!
+        // console.log('finish re-retriving all passwords');
     }
 
 
@@ -121,18 +145,24 @@ export default function PasswordManagerPage() {
                 <p>Welcome, {user.username}!</p>
             </div>
             <div className='passwords-list'>
-                {passowrdsList}
-            </div>
-            <form className="create-password-container" onSubmit={handleSubmit}>
+                {passowrdsList && passowrdsList.length > 0 ? (
+                    passowrdsList
+                ) : (
+                    <p>No passwords for this user</p>
+                )}            </div>
+            <form className="flex-item-container" onSubmit={handleSubmit}>
+                {/* <div className='flex-item-container'> */}
                 <div>
                     <label>URL:</label>
-                    <input type="text" value={url} onChange={e => setUrl(e.target.value)} required />
+                    <input type="text" id="autoWidthInput" value={url} onChange={e => setUrl(e.target.value)} required />
                 </div>
                 <div>
                     <label>Password:</label>
-                    <input type="text" value={password} onChange={e => setPassword(e.target.value)} />
+                    <input type="text" id="autoWidthInput" value={password} onChange={e => setPassword(e.target.value)} />
                 </div>
+                {/* </div> */}
                 <button type="submit"> {editingState ? "Submit changes" : "Create new"} </button>
+                <button onClick={onCancel}> Cancel </button>
             </form>
 
 

@@ -64,9 +64,10 @@ router.get('/users/:userId', async (req, res) => {
     try {
         // const passwords = await PasswordModel.find({ userId });
         const passwords = await PasswordModel.getPasswordByUserId(userId);
-        if (passwords.length === 0) {
-            return res.status(404).json({ message: "No passwords found for this user." });
-        }
+        // remove this!!!! so that even if the passwords for this user is 0, still 200 response
+        // if (passwords.length === 0) {
+        //     return res.status(404).json({ message: "No passwords found for this user." });
+        // }
         res.status(200).json(passwords);
     } catch (error) {
         console.error('Error retrieving passwords for userId:', userId, error);
@@ -150,9 +151,11 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
     const { id } = req.params;
     try {
-        const deletePasswordResponse = await PasswordModel.deletePassword(id);
+        // const deletePasswordResponse = await PasswordModel.deletePassword(id);
+        await PasswordModel.deletePassword(id);
+        console.log('deletePasswordResponse: ', deletePasswordResponse);
         res.send('The password record has been deleted!');
-        res.status(200).send(deletePasswordResponse);
+        // res.status(200).send(deletePasswordResponse); // has to remove, otherwise the api will fail!!!!
     } catch (error) {
         console.error('Failed to fetch passwords for user:', error);
         res.status(500).json({ message: error.message });
