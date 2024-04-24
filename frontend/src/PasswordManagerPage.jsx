@@ -15,6 +15,7 @@ export default function PasswordManagerPage() {
     const [passowrdsList, setPasswordsList] = useState([]); // the elements to be rendered on the page
     const [editingState, setEditingState] = useState(false);
     const [passwordId, setPasswordId] = useState('');
+    const [error, setError] = useState('');
 
     if (!user) {
         console.log('user is none ------');
@@ -33,18 +34,7 @@ export default function PasswordManagerPage() {
         console.log('current user - getAllPasswordsRecords: ', user);
         const userId = user._id;
         console.log('userid - getAllPasswordsRecords: ', userId);
-
         const response = await axios.get(`/api/passwords/users/${userId}`);
-        // avoid cache!!
-        // const response = await axios.get(`/api/passwords/users/${userId}`, {
-        //     headers: {
-        //         'Cache-Control': 'no-cache, no-store, must-revalidate', // Prevents caching of the response
-        //         'Pragma': 'no-cache', // HTTP 1.0 backward compatibility
-        //         'Expires': '0' // Proxies
-        //     }
-        // });
-
-
         console.log('allPasswordsRecords is - getAllPasswordsRecords: ', response);
         const allPasswordsRecords = response.data;
 
@@ -77,19 +67,21 @@ export default function PasswordManagerPage() {
 
     async function handleSubmit(event) {
         event.preventDefault(); // prevent page reloading to reset user to be null; 
+        setError('');
 
+        if (!isValidPassword(password)) {
+            console.log('invalid password!');
+            setError('Password length must be greater than 8, and include letters, numbers, special characters like !@#$%^&*./!');
+            return;
+        }
         const userId = user._id;
         const username = user.username;
         const newPasswordRecord = { userId, url, username, password }; // does the order matters??? 
         console.log('the new added password record is: ', newPasswordRecord);
 
-        // based on editing state, determine whether it's update or create new
+        // based on editing state, determine whether to update or create new password records
         if (editingState === true) {
             await axios.put(`/api/passwords/${passwordId}`, newPasswordRecord);
-
-            // setEditingState(false);
-            // setPassword('')
-            // setUrl('');
         } else {
             await axios.post('/api/passwords', newPasswordRecord);
         }
@@ -104,7 +96,7 @@ export default function PasswordManagerPage() {
         setEditingState(false);
         setUrl('');
         setPassword('');
-
+        setError('');
     }
 
     // Set editing state, but sbumission depends on the submit changes button!! 
@@ -128,15 +120,48 @@ export default function PasswordManagerPage() {
         console.log('start deleteing');
         await axios.delete(`/api/passwords/${passwordRecordId}`);  // await axios.delete('/api/passwords/' + passwordRecordId);
         console.log('The password record has been deleted successfully!');
-        // setDeletedState(true);
-        // setTimeout(() => {
-        //     getAllPasswordsRecords();
-        // }, 1000); // Hide message after 1 second
         await getAllPasswordsRecords(); // cache exists so that we have to refresh the page to get the updated records!!!
-        // console.log('finish re-retriving all passwords');
         onCancel(); // clears input boxes
     }
 
+    function isValidPassword(password) {
+        const hasLetter = /[a-zA-Z]/.test(password);
+        const hasNumber = /\d/.test(password);
+        const hasSpecialChar = /[!@#$%^&*./]/.test(password);
+        return hasLetter && hasNumber && hasSpecialChar && password.length >= 8;
+    }
+
+    // Autogenerate password
+    function generatePassword() {
+        const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+        const numbers = '0123456789';
+        const specialChars = '!@#$%^&*./';
+
+        // Create a random password that meets the requirements
+        const randomLetter = letters[Math.floor(Math.random() * letters.length)];
+        const randomNumber = numbers[Math.floor(Math.random() * numbers.length)];
+        const randomSpecial = specialChars[Math.floor(Math.random() * specialChars.length)];
+
+        // Mix them and create a longer password
+        const base = randomLetter + randomNumber + randomSpecial;
+        let newPassword = base;
+
+        // Shuffle the base to make it less predictable
+        newPassword += shuffle(base + letters + numbers + specialChars);
+
+        // Set the first 12 characters as the password
+        setPassword(newPassword.substring(0, 12));
+    }
+
+    // Shuffle the characters in the password
+    function shuffle(string) {
+        let parts = string.split('');
+        for (let i = parts.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [parts[i], parts[j]] = [parts[j], parts[i]];
+        }
+        return parts.join('');
+    }
 
 
     return (
@@ -144,6 +169,7 @@ export default function PasswordManagerPage() {
             <div className='title'>
                 <h2>Password Manager Page</h2>
                 <p>Welcome, {user.username}!</p>
+                {error && <p style={{ color: 'red' }}>{error}</p>}
             </div>
             <div className='passwords-list'>
                 {passowrdsList && passowrdsList.length > 0 ? (
@@ -152,7 +178,6 @@ export default function PasswordManagerPage() {
                     <p>No passwords for this user</p>
                 )}            </div>
             <form className="flex-item-container" onSubmit={handleSubmit}>
-                {/* <div className='flex-item-container'> */}
                 <div>
                     <label>URL:</label>
                     <input type="text" id="autoWidthInput" value={url} onChange={e => setUrl(e.target.value)} required />
@@ -161,10 +186,11 @@ export default function PasswordManagerPage() {
                     <label>Password:</label>
                     <input type="text" id="autoWidthInput" value={password} onChange={e => setPassword(e.target.value)} />
                 </div>
-                {/* </div> */}
                 <button type="submit"> {editingState ? "Submit changes" : "Create new"} </button>
                 <button onClick={onCancel}> Cancel </button>
             </form>
+            <button onClick={generatePassword}>Generate Password</button>
+
 
 
         </div>
