@@ -152,8 +152,9 @@ router.delete('/:id', async (req, res) => {
     try {
         const deletePasswordResponse = await PasswordModel.deletePassword(id);
         res.send('The password record has been deleted!');
-        res.status(204).send(deletePasswordResponse);
+        res.status(200).send(deletePasswordResponse);
     } catch (error) {
+        console.error('Failed to fetch passwords for user:', error);
         res.status(500).json({ message: error.message });
     }
 });

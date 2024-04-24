@@ -4,15 +4,17 @@ import { useAuth } from './AuthContext';
 import axios from 'axios';
 import './PasswordManagerPage.css';
 
+
 export default function PasswordManagerPage() {
     const navigate = useNavigate(); // navigate accross different pages.
     // Todo: retrieve the current user
     // const currentUser = JSON.parse(localStorage.getItem('currentUser'));
     const { user, login } = useAuth();
-
     const [url, setUrl] = useState('');
     const [password, setPassword] = useState([]);
     const [passowrdsList, setPasswordsList] = useState([]); // the elements to be rendered on the page
+    const [editingState, setEditingState] = useState(false);
+    const [passwordId, setPasswordId] = useState('');
 
     if (!user) {
         console.log('user is none ------');
@@ -21,9 +23,17 @@ export default function PasswordManagerPage() {
     }
 
     async function getAllPasswordsRecords() {
+        console.log('in getAllPasswordsRecords')
+        if (!user) {
+            console.log('getAllPasswordsRecords cannot be completed since user is null');
+            navigate('/login');
+            return null;
+        }
+        console.log('current user - getAllPasswordsRecords: ', user);
         const userId = user._id;
+        console.log('userid - getAllPasswordsRecords: ', userId);
         const response = await axios.get(`/api/passwords/users/${userId}`);
-        console.log('allPasswordsRecords is : ', response);
+        console.log('allPasswordsRecords is - getAllPasswordsRecords: ', response);
         const allPasswordsRecords = response.data;
 
         // Password records elements
@@ -39,8 +49,8 @@ export default function PasswordManagerPage() {
                     <li>
                         url: {allPasswordsRecords[i].url} -
                         password: {allPasswordsRecords[i].password} -
-                        <button className='password-edit-button'> Edit </button> -
-                        <button className='password-edit-button'> Delete </button>
+                        <button onClick={() => editPasswordRecord(allPasswordsRecords[i]._id, allPasswordsRecords[i].url, allPasswordsRecords[i].password)}> Edit </button> -
+                        <button onClick={() => deletePasswordRecord(allPasswordsRecords[i]._id)}> Delete </button>
                     </li>
                 </div>);
         }
@@ -59,9 +69,47 @@ export default function PasswordManagerPage() {
         const username = user.username;
         const newPasswordRecord = { userId, url, username, password }; // does the order matters??? 
         console.log('the new added password record is: ', newPasswordRecord);
-        await axios.post('/api/passwords', newPasswordRecord);
+
+        // based on editing state, determine whether it's update or create new
+        if (editingState === true) {
+            await axios.put(`/api/passwords/${passwordId}`, newPasswordRecord);
+            setEditingState(false);
+            setPassword('')
+            setUrl('');
+        } else {
+            await axios.post('/api/passwords', newPasswordRecord);
+        }
+
         console.log('hihi-current user is: ', user);
         getAllPasswordsRecords();
+    }
+
+    // Set editing state, but sbumission depends on the submit changes button!! 
+    async function editPasswordRecord(passwordRecordId, newUrl, newPassword) {
+        // updates the item in the form
+        setEditingState(true);
+        setUrl(newUrl);
+        setPassword(newPassword);
+        setPasswordId(passwordRecordId);
+
+        // const userId = user._id;
+        // const username = user.username;
+        // const newPasswordRecord = { userId, newUrl, username, newPassword };
+        // await axios.put(`/api/passwords/${passwordRecordId}`, newPasswordRecord);
+        // console.log('finish updating!!');
+
+    }
+
+    async function deletePasswordRecord(passwordRecordId) {
+        console.log('id is: ', passwordRecordId);
+        console.log('start deleteing');
+        await axios.delete(`/api/passwords/${passwordRecordId}`);  // await axios.delete('/api/passwords/' + passwordRecordId);
+        console.log('The password record has been deleted successfully!');
+        // setTimeout(() => {
+        //     getAllPasswordsRecords();
+        // }, 1000); // Hide message after 1 second
+        await getAllPasswordsRecords();
+        console.log('finish re-retriving all passwords');
     }
 
 
@@ -84,7 +132,7 @@ export default function PasswordManagerPage() {
                     <label>Password:</label>
                     <input type="text" value={password} onChange={e => setPassword(e.target.value)} />
                 </div>
-                <button type="submit">Save Password</button>
+                <button type="submit"> {editingState ? "Submit changes" : "Create new"} </button>
             </form>
 
 
