@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const UserModel = require('./db/user.model.cjs');
+const UserModel = require('../db/user.model.cjs');
 
 // Get all users in DB
 // http://localhost:8000/api/users

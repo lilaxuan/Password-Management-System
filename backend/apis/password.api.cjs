@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
-const PasswordModel = require('./db/password.model.cjs');
+const PasswordModel = require('../db/password.model.cjs');
 console.log(PasswordModel);
 
 
@@ -153,7 +153,6 @@ router.delete('/:id', async (req, res) => {
     try {
         // const deletePasswordResponse = await PasswordModel.deletePassword(id);
         await PasswordModel.deletePassword(id);
-        console.log('deletePasswordResponse: ', deletePasswordResponse);
         res.send('The password record has been deleted!');
         // res.status(200).send(deletePasswordResponse); // has to remove, otherwise the api will fail!!!!
     } catch (error) {
