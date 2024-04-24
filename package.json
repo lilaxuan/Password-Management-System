@@ -1,33 +1,30 @@
 {
-  "name": "password-manager-system",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview",
-    "start": "node server.cjs"
-  },
-  "dependencies": {
-    "axios": "^1.6.8",
-    "express": "^4.19.1",
-    "mongodb": "^6.5.0",
-    "mongoose": "^8.3.1",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-router": "^6.22.3",
-    "react-router-dom": "^6.22.3"
-  },
-  "devDependencies": {
-    "@types/react": "^18.2.66",
-    "@types/react-dom": "^18.2.22",
-    "@vitejs/plugin-react": "^4.2.1",
-    "eslint": "^8.57.0",
-    "eslint-plugin-react": "^7.34.1",
-    "eslint-plugin-react-hooks": "^4.6.0",
-    "eslint-plugin-react-refresh": "^0.4.6",
-    "vite": "^5.2.0"
-  }
+    "name": "password-manager-system",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "workspaces": [
+        "backend",
+        "frontend"
+    ],
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "dev": "concurrently \"npm run dev -w backend\" \"npm run dev -w frontend\"",
+        "build": "npm run build -ws --if-present",
+        "prod": "npm run start -w backend"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/lilaxuan/Password-Management-System.git"
+    },
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/lilaxuan/Password-Management-System/issues"
+    },
+    "homepage": "",
+    "dependencies": {},
+    "devDependencies": {
+        "concurrently": "^8.0.1"
+    }
 }

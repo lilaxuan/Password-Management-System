@@ -17,7 +17,7 @@ choose the app name; and package name
 
 cd into the package directory
 
-`npm run dev`  // Render the webpage on localhost
+`npm run dev` (vite)  // Render the webpage on localhost
 
 1.3 Link the local repo to the remote origin
 `git init`
@@ -33,7 +33,7 @@ cd into the package directory
 
 
 ## 2. Backend: Create the server logic && Configure the DB on MongoDB Altas
-`npm run start` to render the server locally
+`npm run start` (node server.cjs   node server.js) to render the server locally
 
 #### 2.1 Create a server.cjs file 
 Basic get/put/ methods are defined;
@@ -46,6 +46,13 @@ Make sure all dependencies are added (express., etc);
 Run `npm run start` to render the server locally to check if the server is up and running; 
 
 ![Alt text](image-3.png)
+
+
+### After refactoring:
+`npm install` in backend dir and frontend dir
+in backend dir: `npm run dev` (concurrently \"npm run dev -w backend\" \"npm run dev -w frontend\") run backend and frontend concurrently
+in frontend dir: `npm run dev` (concurrently \"npm run dev -w backend\" \"npm run dev -w frontend\") run backend and frontend concurrently
+
 
 #### 2.2 Create a DB instance on MongoDB Altas (No need to pre-set the schema when creating the DB & the table will be automatically created once we insert a new record to the DB; If we want to change the schema in the code, then we need to delete the table in db to re-generate a new one)
 Create a project in MongoDB Altas firstly (One project can only have one free tier db); 
