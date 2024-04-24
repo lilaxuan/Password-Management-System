@@ -50,8 +50,14 @@ Run `npm run start` to render the server locally to check if the server is up an
 
 ### After refactoring:
 `npm install` in backend dir and frontend dir
-in backend dir: `npm run dev` (concurrently \"npm run dev -w backend\" \"npm run dev -w frontend\") run backend and frontend concurrently
-in frontend dir: `npm run dev` (concurrently \"npm run dev -w backend\" \"npm run dev -w frontend\") run backend and frontend concurrently
+in backend dir: `npm run dev` 
+in frontend dir: `npm run dev` 
+Alternatively, in root dir, run `npm run dev` to concurrently start the server and render the front end!
+
+
+Minimic deployment locally:
+in root dir: `npm install` `npm run build` `npm run dev`
+
 
 
 #### 2.2 Create a DB instance on MongoDB Altas (No need to pre-set the schema when creating the DB & the table will be automatically created once we insert a new record to the DB; If we want to change the schema in the code, then we need to delete the table in db to re-generate a new one)
