@@ -29,8 +29,8 @@ const passwordSchema = new Schema({
     }
 });
 
-// ?? Create a compound index on userId and url so that one url of each user can only have one record
-// passwordSchema.index({ userId: 1, url: 1 }, { unique: true });
+// Create a compound index on userId and url so that one url of each user can only have one record
+passwordSchema.index({ userId: 1, url: 1 }, { unique: true });
 
 // Mongoose will create a new model. This model will correspond to a collection named users in the MongoDB database 
 // (Mongoose will automatically convert the model name User to lowercase and pluralize it (passwords) as the collection name). 

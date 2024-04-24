@@ -80,13 +80,38 @@ export default function PasswordManagerPage() {
         console.log('the new added password record is: ', newPasswordRecord);
 
         // based on editing state, determine whether to update or create new password records
-        if (editingState === true) {
-            await axios.put(`/api/passwords/${passwordId}`, newPasswordRecord);
-        } else {
-            await axios.post('/api/passwords', newPasswordRecord);
+        try {
+            if (editingState === true) {
+                await axios.put(`/api/passwords/${passwordId}`, newPasswordRecord);
+            } else {
+                await axios.post('/api/passwords', newPasswordRecord);
+            }
+        } catch (error) {
+            // Check if the error response has a status code of 409
+            console.log('error catched!!!');
+            if (error.response && error.response.status === 409) {
+                console.log('hihihihi');
+                setError('Error: Entry with this userId and URL already exists.');
+                console.log('error is: ', error);
+                console.error('Error: Entry with this userId and URL already exists.', error.response.data);
+                // Handle the specific case for 409 status
+                // You might want to inform the user or take specific actions here
+            } else {
+                // Handle other kinds of errors
+                setError('An unexpected error occurred:', error.response ? error.response.data : error);
+                console.error('An unexpected error occurred:', error.response ? error.response.data : error);
+            }
         }
 
-        onCancel(); // set back to initial state
+        if (error) {
+            // set back to initial state but not clear error
+            setEditingState(false);
+            setUrl('');
+            setPassword('');
+        } else {
+            // set back to initial state and clear error
+            oncancel();
+        }
 
         console.log('hihi-current user is: ', user);
         getAllPasswordsRecords(); // When last password record of the users's deleted, it will throw error due to the api check the passwords length

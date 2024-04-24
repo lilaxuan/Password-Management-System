@@ -114,7 +114,26 @@ router.get('/search/:url/:userId', async (req, res) => {
 // }
 router.post('/', async (req, res) => {
     try {
+        console.log('create a new password record!!');
         const { userId, url, username, password } = req.body;
+
+        // Check if a password entry with the same userId and URL already exists
+        console.log('111');
+        // const existingEntry = await PasswordModel.findOne({ userId, url }); // not working
+        const existingEntry = await PasswordModel.checkUniqueUrlUser(userId, url);
+
+        // const existingEntry = await PasswordModel.findOne({
+        //     userId: mongoose.Types.ObjectId(userId),
+        //     url: url
+        // });
+
+        console.log('222');
+        if (existingEntry) {
+            console.log('Duplicate url entries not allowed');
+            return res.status(409).json({ message: 'An entry with this userId and URL already exists.' }); // has to return; otherwise, server will crash since res already sent status code
+        }
+        console.log('333: ', existingEntry);
+
         const newPassword = await PasswordModel.addNewPassword({ userId, url, username, password });
         res.status(201).json(newPassword);
     } catch (error) {
@@ -135,6 +154,13 @@ router.put('/:id', async (req, res) => {
     const { id } = req.params;
     const passwordData = req.body;
     try {
+        // check uniqueness of userId + url
+        const existingEntry = await PasswordModel.checkUniqueUrlUser(userId, url);
+        if (existingEntry) {
+            console.log('Duplicate url entries not allowed');
+            return res.status(409).json({ message: 'An entry with this userId and URL already exists.' }); // has to return; otherwise, server will crash since res already sent status code
+        }
+
         const updatedPassword = await PasswordModel.updatePassword(id, passwordData);
         if (updatedPassword) {
             res.json(updatedPassword);

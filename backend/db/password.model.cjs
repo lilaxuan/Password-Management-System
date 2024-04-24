@@ -21,6 +21,10 @@ function getPasswordByUserId(userId) {
     return PasswordModel.find({ userId: userId }); // has to import body parser in server.js and this method has to be defined here to be used. 
 }
 
+function checkUniqueUrlUser(userId, url) {
+    return PasswordModel.findOne({ userId, url });
+}
+
 function getPasswordByUrl(url, userId) {
     return PasswordModel.findOne({ url, userId }).exec();
 }
@@ -47,8 +51,9 @@ module.exports = {
     getAllPasswords,
     addNewPassword,
     getPasswordById,
-    getPasswordByUserId,
     getPasswordByUrl,
     updatePassword,
-    deletePassword
+    deletePassword,
+    getPasswordByUserId,
+    checkUniqueUrlUser
 }
