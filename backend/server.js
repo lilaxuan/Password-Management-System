@@ -10,7 +10,7 @@ const cors = require('cors');
 
 
 // Notes: When Creating db, no need to pre-set up schema
-const mongoDBEndpoint = 'mongodb+srv://admin:xianer123@password-management-sys.cacpwcb.mongodb.net/?retryWrites=true&w=majority&appName=Password-Management-System-DBssl=false';
+const mongoDBEndpoint = 'mongodb+srv://admin:xianer123@password-management-sys.cacpwcb.mongodb.net/?retryWrites=true&w=majority&appName=Password-Management-System-DB';
 mongoose.connect(mongoDBEndpoint, {
     useNewUrlParser: true,
 })
