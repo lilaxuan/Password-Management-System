@@ -94,8 +94,6 @@ export default function PasswordManagerPage() {
                 setError('Error: Entry with this userId and URL already exists.');
                 console.log('error is: ', error);
                 console.error('Error: Entry with this userId and URL already exists.', error.response.data);
-                // Handle the specific case for 409 status
-                // You might want to inform the user or take specific actions here
             } else {
                 // Handle other kinds of errors
                 setError('An unexpected error occurred:', error.response ? error.response.data : error);
@@ -103,15 +101,10 @@ export default function PasswordManagerPage() {
             }
         }
 
-        if (error) {
-            // set back to initial state but not clear error
-            setEditingState(false);
-            setUrl('');
-            setPassword('');
-        } else {
-            // set back to initial state and clear error
-            oncancel();
-        }
+        // set back to initial state but not clear error
+        setEditingState(false);
+        setUrl('');
+        setPassword('');
 
         console.log('hihi-current user is: ', user);
         getAllPasswordsRecords(); // When last password record of the users's deleted, it will throw error due to the api check the passwords length
@@ -196,12 +189,7 @@ export default function PasswordManagerPage() {
                 <p>Welcome, {user.username}!</p>
                 {error && <p style={{ color: 'red' }}>{error}</p>}
             </div>
-            <div className='passwords-list'>
-                {passowrdsList && passowrdsList.length > 0 ? (
-                    passowrdsList
-                ) : (
-                    <p>No passwords for this user</p>
-                )}            </div>
+
             <form className="flex-item-container" onSubmit={handleSubmit}>
                 <div>
                     <label>URL:</label>
@@ -211,12 +199,18 @@ export default function PasswordManagerPage() {
                     <label>Password:</label>
                     <input type="text" id="autoWidthInput" value={password} onChange={e => setPassword(e.target.value)} />
                 </div>
+                <button type="button" onClick={generatePassword}>Generate Password</button>
                 <button type="submit"> {editingState ? "Submit changes" : "Create new"} </button>
                 <button onClick={onCancel}> Cancel </button>
             </form>
-            <button onClick={generatePassword}>Generate Password</button>
 
-
+            <div className='passwords-list'>
+                {passowrdsList && passowrdsList.length > 0 ? (
+                    passowrdsList
+                ) : (
+                    <p>No passwords for this user</p>
+                )}
+            </div>
 
         </div>
     );

@@ -141,7 +141,7 @@ router.post('/', async (req, res) => {
     }
 });
 
-// PUT to update a password record
+// PUT to update a password record based on password id
 // http://localhost:8000/api/passwords/id
 // request body json: partial info is okay
 // {
@@ -152,16 +152,29 @@ router.post('/', async (req, res) => {
 // }
 router.put('/:id', async (req, res) => {
     const { id } = req.params;
-    const passwordData = req.body;
+    const newPasswordData = req.body;
     try {
         // check uniqueness of userId + url
-        const existingEntry = await PasswordModel.checkUniqueUrlUser(userId, url);
-        if (existingEntry) {
-            console.log('Duplicate url entries not allowed');
-            return res.status(409).json({ message: 'An entry with this userId and URL already exists.' }); // has to return; otherwise, server will crash since res already sent status code
-        }
+        const existingPassword = await PasswordModel.getPasswordById(id);
+        console.log('existingPassword: ', existingPassword);
+        const userId = existingPassword.userId;
+        // const url = existingPassword.url;
 
-        const updatedPassword = await PasswordModel.updatePassword(id, passwordData);
+        // Check for existing entries that match userId and URL but are not the current record
+        // const existingEntry = await PasswordModel.findOne({
+        //     userId: userId,
+        //     url: url,
+        //     _id: { $ne: id } // Exclude the current password record from the search
+        // });
+        console.log('input-hihihi');
+        console.log('userId - username - url - passwordId: ', userId, existingPassword.username, newPasswordData.url, id);
+        const existingEntry = await PasswordModel.findRecordByUrlAndUserExcludeExisting(userId, newPasswordData.url, id);
+        console.log('input-existing entry: ', existingEntry);
+        if (existingEntry) {
+            console.log('Duplicate url entries not allowed, cannot update this entry!');
+            return res.status(409).json({ message: 'Another entry with the same userId and URL already exists.' });
+        }
+        const updatedPassword = await PasswordModel.updatePassword(id, newPasswordData);
         if (updatedPassword) {
             res.json(updatedPassword);
         } else {

@@ -25,6 +25,14 @@ function checkUniqueUrlUser(userId, url) {
     return PasswordModel.findOne({ userId, url });
 }
 
+function findRecordByUrlAndUserExcludeExisting(userId, url, id) {
+    return PasswordModel.findOne({
+        userId: userId,
+        url: url,
+        _id: { $ne: id } // Exclude the current password record from the search
+    });
+}
+
 function getPasswordByUrl(url, userId) {
     return PasswordModel.findOne({ url, userId }).exec();
 }
@@ -55,5 +63,6 @@ module.exports = {
     updatePassword,
     deletePassword,
     getPasswordByUserId,
-    checkUniqueUrlUser
+    checkUniqueUrlUser,
+    findRecordByUrlAndUserExcludeExisting
 }
