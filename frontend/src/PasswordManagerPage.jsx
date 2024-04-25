@@ -13,6 +13,9 @@ export default function PasswordManagerPage() {
     const [url, setUrl] = useState('');
     const [password, setPassword] = useState([]);
     const [passowrdsList, setPasswordsList] = useState([]); // the elements to be rendered on the page
+    const [passwordsListElement, setPasswordsListElement] = useState([]);
+    const [allUsers, setAllUsers] = useState([]);
+
     const [editingState, setEditingState] = useState(false);
     const [passwordId, setPasswordId] = useState('');
     const [error, setError] = useState('');
@@ -22,6 +25,9 @@ export default function PasswordManagerPage() {
     const [passwordLength, setPasswordLength] = useState(8);
     const [isGenerateEnabled, setIsGenerateEnabled] = useState(false);
     const [initialVisibilityState, setInitialVisibilityState] = useState({});
+    const [selectedSharePasswordIds, setShareSelectedPasswordIds] = useState([]);
+    const [shareUsername, setShareUsername] = useState('');
+    const [shareError, setShareError] = useState('');
 
 
     if (!user) {
@@ -79,12 +85,29 @@ export default function PasswordManagerPage() {
         }
         console.log('passwordsListElement: ', passwordsListElement);
         console.log('password show visiblity: ', initialVisibilityState);
-        setPasswordsList(passwordsListElement);
+        setPasswordsList(allPasswordsRecords);
+        setPasswordsListElement(passwordsListElement);
+    }
+
+    // async function getAllUsers() {
+    //     const allUsersObject = await axios.get('/api/users');
+    //     const allUsersList = []
+    //     for (let i = 0; i < allUsersObject.length; i++) {
+    //         allUsersList.push(allUsersObject[i].username);
+    //     }
+    //     setAllUsers(allUsersList);
+    // }
+
+    function onStart() {
+        getAllPasswordsRecords();
+        // getAllUsers();
     }
 
     useEffect(() => {
-        getAllPasswordsRecords();
+        onStart();
     }, []);
+
+
 
     async function handleSubmit(event) {
         event.preventDefault(); // prevent page reloading to reset user to be null; 
@@ -290,6 +313,30 @@ export default function PasswordManagerPage() {
         });
     };
 
+    async function handleShareSubmit(event) {
+        event.preventDefault();
+        if (shareUsername === user.username) {
+            setShareError("Cannot share passwords with yourself.");
+            return;
+        }
+
+        try {
+            const response = await axios.post('/api/passwords/share', {
+                ownerId: user._id,
+                recipientUsername: shareUsername
+            });
+            if (response.status === 200) {
+                alert('Share request sent.');
+            }
+        } catch (error) {
+            if (error.response && error.response.status === 404) {
+                setShareError('Username does not exist.');
+            } else {
+                setShareError('An error occurred while sending the share request.');
+            }
+        }
+    };
+
     return (
         <div className='password-manager-page' >
             <div className='title'>
@@ -332,12 +379,45 @@ export default function PasswordManagerPage() {
             </form>
 
             <div className='passwords-list'>
-                {passowrdsList && passowrdsList.length > 0 ? (
-                    passowrdsList
+                {passwordsListElement && passwordsListElement.length > 0 ? (
+                    passwordsListElement
                 ) : (
                     <p>No passwords for this user</p>
                 )}
             </div>
+
+            {/* Add share form */}
+            <div className='title'>
+                <h2>Share Your Password</h2>
+                {error && <p style={{ color: 'red' }}>{error}</p>}
+            </div>
+            <form onSubmit={handleShareSubmit} className="flex-item-container">
+                <input
+                    type="text"
+                    value={shareUsername}
+                    onChange={(e) => setShareUsername(e.target.value)}
+                    placeholder="Enter username to share with"
+                    required
+                />
+                <select
+                    multiple
+                    value={selectedSharePasswordIds}
+                    onChange={(e) => {
+                        const selectedOptions = Array.from(e.target.selectedOptions, option => option.value);
+                        setShareSelectedPasswordIds(selectedOptions);
+                    }}
+                    required
+                >
+                    {passowrdsList.map((record) => (
+                        <option key={record._id} value={record._id}>
+                            {record.url} - {record.password}
+                        </option>
+                    ))}
+                </select>
+
+                <button type="submit">Share Passwords</button>
+                {shareError && <p style={{ color: 'red' }}>{shareError}</p>}
+            </form>
 
         </div>
     );
