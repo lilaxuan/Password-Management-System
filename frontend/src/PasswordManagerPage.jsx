@@ -66,6 +66,9 @@ export default function PasswordManagerPage() {
                         <button onClick={() => togglePasswordVisibility(allPasswordsRecords[i]._id, initialVisibilityState)}>
                             {initialVisibilityState[allPasswordsRecords[i]._id] ? 'Hide' : 'Show'}
                         </button>
+                        <button onClick={() => copyToClipboard(allPasswordsRecords[i].password)}>
+                            Copy Password
+                        </button>
 
                         <button onClick={() => editPasswordRecord(allPasswordsRecords[i]._id, allPasswordsRecords[i].url, allPasswordsRecords[i].password)}> Edit </button>
                         <button onClick={() => deletePasswordRecord(allPasswordsRecords[i]._id)}> Delete </button>
@@ -276,6 +279,15 @@ export default function PasswordManagerPage() {
         //     ...prevState,
         //     [id]: !prevState[id] // Toggle the visibility state for the specific ID
         // }));
+    };
+
+
+    const copyToClipboard = (text) => {
+        navigator.clipboard.writeText(text).then(() => {
+            alert('Password copied to clipboard!');
+        }).catch(err => {
+            console.error('Failed to copy: ', err);
+        });
     };
 
     return (
