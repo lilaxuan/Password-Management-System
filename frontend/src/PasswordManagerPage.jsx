@@ -16,6 +16,11 @@ export default function PasswordManagerPage() {
     const [editingState, setEditingState] = useState(false);
     const [passwordId, setPasswordId] = useState('');
     const [error, setError] = useState('');
+    const [useAlphabet, setUseAlphabet] = useState(false);
+    const [useNumerals, setUseNumerals] = useState(false);
+    const [useSymbols, setUseSymbols] = useState(false);
+    const [passwordLength, setPasswordLength] = useState(8);
+    const [isGenerateEnabled, setIsGenerateEnabled] = useState(false);
 
     if (!user) {
         console.log('user is none ------');
@@ -69,11 +74,22 @@ export default function PasswordManagerPage() {
         event.preventDefault(); // prevent page reloading to reset user to be null; 
         setError('');
 
-        if (!isValidPassword(password)) {
-            console.log('invalid password!');
-            setError('Password length must be greater than 8, and include letters, numbers, special characters like !@#$%^&*./!');
-            return;
+        if (!url) {
+            setError('Url cannot be empty!');
         }
+
+        if (isGenerateEnabled) {
+            if (passwordLength < 4 || passwordLength > 50) {
+                setError('Length must be between 4 and 50!');
+                return;
+            }
+        }
+        // if (!isValidPassword(password)) {
+        //     console.log('invalid password!');
+        //     setError('Password length must be greater than 8, and include letters, numbers, special characters like !@#$%^&*./!');
+        //     return;
+        // }
+
         const userId = user._id;
         const username = user.username;
         const newPasswordRecord = { userId, url, username, password }; // does the order matters??? 
@@ -150,37 +166,74 @@ export default function PasswordManagerPage() {
     }
 
     // Autogenerate password
+    // function generatePassword() {
+    //     const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+    //     const numbers = '0123456789';
+    //     const specialChars = '!@#$%^&*./';
+
+    //     // Create a random password that meets the requirements
+    //     const randomLetter = letters[Math.floor(Math.random() * letters.length)];
+    //     const randomNumber = numbers[Math.floor(Math.random() * numbers.length)];
+    //     const randomSpecial = specialChars[Math.floor(Math.random() * specialChars.length)];
+
+    //     // Mix them and create a longer password
+    //     const base = randomLetter + randomNumber + randomSpecial;
+    //     let newPassword = base;
+
+    //     // Shuffle the base to make it less predictable
+    //     newPassword += shuffle(base + letters + numbers + specialChars);
+
+    //     // Set the first 12 characters as the password
+    //     setPassword(newPassword.substring(0, 12));
+    // }
+
+    // // Shuffle the characters in the password
+    // function shuffle(string) {
+    //     let parts = string.split('');
+    //     for (let i = parts.length - 1; i > 0; i--) {
+    //         const j = Math.floor(Math.random() * (i + 1));
+    //         [parts[i], parts[j]] = [parts[j], parts[i]];
+    //     }
+    //     return parts.join('');
+    // }
+
+
+    useEffect(() => {
+        updateGenerateButtonState();
+    }, [useAlphabet, useNumerals, useSymbols]);
+
+    function updateGenerateButtonState() {
+        setIsGenerateEnabled(useAlphabet || useNumerals || useSymbols);
+    }
+
     function generatePassword() {
-        const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-        const numbers = '0123456789';
-        const specialChars = '!@#$%^&*./';
-
-        // Create a random password that meets the requirements
-        const randomLetter = letters[Math.floor(Math.random() * letters.length)];
-        const randomNumber = numbers[Math.floor(Math.random() * numbers.length)];
-        const randomSpecial = specialChars[Math.floor(Math.random() * specialChars.length)];
-
-        // Mix them and create a longer password
-        const base = randomLetter + randomNumber + randomSpecial;
-        let newPassword = base;
-
-        // Shuffle the base to make it less predictable
-        newPassword += shuffle(base + letters + numbers + specialChars);
-
-        // Set the first 12 characters as the password
-        setPassword(newPassword.substring(0, 12));
-    }
-
-    // Shuffle the characters in the password
-    function shuffle(string) {
-        let parts = string.split('');
-        for (let i = parts.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [parts[i], parts[j]] = [parts[j], parts[i]];
+        if (!isGenerateEnabled) {
+            alert("Please select at least one character type (Alphabet, Numerals, or Symbols).");
+            return;
         }
-        return parts.join('');
-    }
 
+        const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+        const numerals = '0123456789';
+        const symbols = '!@#$%^&*()_+-=[]{}|;:",.<>/?';
+        let validChars = '';
+
+        if (useAlphabet) {
+            validChars += alphabet;
+        }
+        if (useNumerals) {
+            validChars += numerals;
+        }
+        if (useSymbols) {
+            validChars += symbols;
+        }
+
+        let newPassword = '';
+        for (let i = 0; i < passwordLength; i++) {
+            newPassword += validChars.charAt(Math.floor(Math.random() * validChars.length));
+        }
+
+        setPassword(newPassword);
+    }
 
     return (
         <div className='password-manager-page' >
@@ -198,6 +251,25 @@ export default function PasswordManagerPage() {
                 <div>
                     <label>Password:</label>
                     <input type="text" id="autoWidthInput" value={password} onChange={e => setPassword(e.target.value)} />
+                </div>
+                <div className='flex-item-container'>
+                    <label>
+                        <input type="checkbox" checked={useAlphabet} onChange={e => setUseAlphabet(e.target.checked)} />
+                        Alphabet
+                    </label>
+                    <label>
+                        <input type="checkbox" checked={useNumerals} onChange={e => setUseNumerals(e.target.checked)} />
+                        Numerals
+                    </label>
+                    <label>
+                        <input type="checkbox" checked={useSymbols} onChange={e => setUseSymbols(e.target.checked)} />
+                        Symbols
+                    </label>
+                    <label>
+                        Length:
+                        {/* <input type="text" value={passwordLength} onChange={handleLengthChange} /> */}
+                        <input type="number" value={passwordLength} onChange={e => setPasswordLength(e.target.value)} />
+                    </label>
                 </div>
                 <button type="button" onClick={generatePassword}>Generate Password</button>
                 <button type="submit"> {editingState ? "Submit changes" : "Create new"} </button>

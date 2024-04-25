@@ -82,6 +82,7 @@ Add mongodb and mongorose dependencies in the package.json
 
 Once the database is created and the connect point is configured; Add the DB connection in the server.cjs
 
+### Note: make sure the IP address allowlist is 0.0.0.0/0 so that Render is able to connect to MongoDB
 
 
 #### 2.4 Develop APIs and test them on Postman/REST
