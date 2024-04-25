@@ -59,6 +59,8 @@ export default function PasswordManagerPage() {
                         <label>  {allPasswordsRecords[i].password} </label>
                         <button onClick={() => editPasswordRecord(allPasswordsRecords[i]._id, allPasswordsRecords[i].url, allPasswordsRecords[i].password)}> Edit </button>
                         <button onClick={() => deletePasswordRecord(allPasswordsRecords[i]._id)}> Delete </button>
+                        <p> Last used: </p>
+                        <p>{formatDate(allPasswordsRecords[i].updatedAt)}</p>
                     </div>
                 </div>);
         }
@@ -234,6 +236,24 @@ export default function PasswordManagerPage() {
 
         setPassword(newPassword);
     }
+
+    function daysAgo(dateString) {
+        const date = new Date(dateString);
+        const now = new Date();
+        const differenceInTime = now.getTime() - date.getTime();
+        const differenceInDays = Math.floor(differenceInTime / (1000 * 3600 * 24));
+        return differenceInDays;
+    }
+
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        const year = date.getFullYear();
+        const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Months are 0-indexed, pad with leading zero
+        const day = date.getDate().toString().padStart(2, '0'); // Pad with leading zero
+
+        return `${year}-${month}-${day}`;
+    }
+
 
     return (
         <div className='password-manager-page' >
