@@ -21,6 +21,8 @@ export default function PasswordManagerPage() {
     const [useSymbols, setUseSymbols] = useState(false);
     const [passwordLength, setPasswordLength] = useState(8);
     const [isGenerateEnabled, setIsGenerateEnabled] = useState(false);
+    const [initialVisibilityState, setInitialVisibilityState] = useState({});
+
 
     if (!user) {
         console.log('user is none ------');
@@ -51,20 +53,29 @@ export default function PasswordManagerPage() {
             //     password: allPasswordsRecords[i].password
             // };
             // passwordsListElement.push(newObj);
+            console.log('current - initialVisibilityState: ', initialVisibilityState);
             passwordsListElement.push(
                 <div className='password-list'>
                     <div className='flex-item-container'>
                         <p> {i + 1}. </p>
                         <label> {allPasswordsRecords[i].url} </label>
-                        <label>  {allPasswordsRecords[i].password} </label>
+                        {/* <label>  {allPasswordsRecords[i].password} </label> */}
+                        <label htmlFor={`passwordInput${allPasswordsRecords[i]._id}`}>
+                            {initialVisibilityState[allPasswordsRecords[i]._id] ? allPasswordsRecords[i].password : '*******'}
+                        </label>
+                        <button onClick={() => togglePasswordVisibility(allPasswordsRecords[i]._id, initialVisibilityState)}>
+                            {initialVisibilityState[allPasswordsRecords[i]._id] ? 'Hide' : 'Show'}
+                        </button>
+
                         <button onClick={() => editPasswordRecord(allPasswordsRecords[i]._id, allPasswordsRecords[i].url, allPasswordsRecords[i].password)}> Edit </button>
                         <button onClick={() => deletePasswordRecord(allPasswordsRecords[i]._id)}> Delete </button>
                         <p> Last used: </p>
                         <p>{formatDate(allPasswordsRecords[i].updatedAt)}</p>
                     </div>
-                </div>);
+                </div >);
         }
         console.log('passwordsListElement: ', passwordsListElement);
+        console.log('password show visiblity: ', initialVisibilityState);
         setPasswordsList(passwordsListElement);
     }
 
@@ -254,6 +265,18 @@ export default function PasswordManagerPage() {
         return `${year}-${month}-${day}`;
     }
 
+    function togglePasswordVisibility(id, initialVisibilityState) {
+        console.log('toggle clicked!');
+        const pre = initialVisibilityState[id];
+        initialVisibilityState[id] = !pre;
+        console.log('updated initialVisibilityState: ', initialVisibilityState);
+        setInitialVisibilityState(initialVisibilityState);
+        getAllPasswordsRecords();
+        // setInitialVisibilityState(prevState => ({
+        //     ...prevState,
+        //     [id]: !prevState[id] // Toggle the visibility state for the specific ID
+        // }));
+    };
 
     return (
         <div className='password-manager-page' >
