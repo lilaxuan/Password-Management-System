@@ -4,7 +4,7 @@ const users = require('./apis/user.api.cjs');
 const shareRequests = require('./apis/share.request.api.cjs');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-// const cookieParser = require('cookie-parser') // todo: import later on
+const cookieParser = require('cookie-parser')
 const app = express();
 const path = require('path');
 const cors = require('cors');
@@ -19,7 +19,7 @@ mongoose.connect(mongoDBEndpoint, {
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'Error connecting to MongoDB:'));
 
-// app.use(cookieParser());
+app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/api/passwords', passwords); // defined the base root url for the API

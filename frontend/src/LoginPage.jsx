@@ -25,8 +25,6 @@ export default function LoginPage() {
         e.preventDefault();
         setError('');
 
-        // const users = JSON.parse(localStorage.getItem('users')) || [];
-
         const foundUser = users.find(user => user.username === username); // an user object with username + password if it can be found in the storage
 
         if (!username || !password) {
@@ -40,7 +38,6 @@ export default function LoginPage() {
         }
 
         // Simulate user login
-        // localStorage.setItem('currentUser', JSON.stringify(user));
         login(foundUser); // set user data as not null via the context provider
 
         // If user is logged in, navigate to the password manager page;

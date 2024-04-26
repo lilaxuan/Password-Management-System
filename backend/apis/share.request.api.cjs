@@ -42,12 +42,7 @@ router.get('/:id', async (req, res) => {
 router.post('/send', async (req, res) => {
     try {
         const newShareRequest = req.body;
-        console.log('newShareRequest: ', newShareRequest);
-        // Todo: check uniqueness of owner id and share id. 
-        // await ShareRequestModel.createNewShareReuqest(newShareRequest);
-
         const createdShareRequest = await ShareRequestModel.createNewShareRequest(newShareRequest);
-
 
         // Save the shared password for the recipientUser (With pending status)
         const recipientId = newShareRequest.recipientId;
@@ -62,8 +57,6 @@ router.post('/send', async (req, res) => {
         }
 
         // Todo: check if this share request has been sent, no duplicated share request allowed
-        console.log("recipientUser111: ", recipientUser);
-        console.log('hihihi- createdShareRequest: ', createdShareRequest);
         recipientUser.receivedPasswords.push({
             sharedReuqestId: createdShareRequest._id,
             passwordId: newShareRequest.passwordId,
@@ -71,9 +64,7 @@ router.post('/send', async (req, res) => {
             sharedUsername: sharedUser.username,
             status: 'pending'
         });
-        console.log("recipientUser222: ", recipientUser);
         await recipientUser.save(); // Directly save the model if using Mongoose; Sometimes need to delete some entries in the database, so that the save could work
-        console.log('Updated recipientUser: ', recipientUser);
         res.status(201).send('Share request sent.');
     } catch (error) {
         res.status(500).send('Error sending share request.');
@@ -92,11 +83,8 @@ router.post('/send', async (req, res) => {
 router.put('/accept/:id', async (req, res) => {
     try {
         const shareRequestId = req.params.id;
-        console.log("shareRequestId: ", shareRequestId);
         const newShareRequest = req.body;
         await ShareRequestModel.updateShareRequest(shareRequestId, newShareRequest);
-        console.log("udpated -11111: ", newShareRequest);
-
 
         // Update the received password status to 'accepted' for the recipientUser
         const recipientId = newShareRequest.recipientId
@@ -131,9 +119,7 @@ router.put('/accept/:id', async (req, res) => {
         if (!entryFound) {
             return res.status(404).send('No corresponding share request entry found in recipient.');
         }
-        console.log('hihihi2-recipientUser: ', recipientUser);
         await recipientUser.save(); // Directly save the model if using Mongoose
-        console.log('Updated recipientUser: ', recipientUser);
         res.send('Share request accepted and password saved.');
     } catch (error) {
         res.status(500).send('Error accepting share request.');
@@ -158,6 +144,7 @@ router.put('/refuse/:id', async (req, res) => {
         const shareRequestId = req.params.id;
         const newShareRequest = req.body;
         await ShareRequestModel.updateShareRequest(shareRequestId, newShareRequest);
+
         // Update the received password status to 'refused' for the recipientUser
         const recipientId = newShareRequest.recipientId
         const recipientUser = await UserModel.getUserById(recipientId);
@@ -189,7 +176,6 @@ router.put('/refuse/:id', async (req, res) => {
         res.status(500).send('Error refusing share request.');
     }
 });
-
 
 
 // PUT: Update a share request's information

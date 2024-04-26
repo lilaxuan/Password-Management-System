@@ -30,32 +30,9 @@ router.get('/:id', async (req, res) => { // In the Get request function header, 
     }
 });
 
-// GET all passwords for a specific user, distinguish with get request by password id via url
-// http://localhost:8000/api/passwords/users/
-// router.get('/users/:userId', async (req, res) => {
-//     console.log('Get passwords by user id!!!');
-//     try {
-//         const userId = req.params.userId;
-//         if (!mongoose.Types.ObjectId.isValid(userId)) {
-//             return res.status(400).send('Invalid user ID');
-//         }
-
-//         console.log('userId is: ', userId);
-//         const passwords = await PasswordModel.find({ userId: userId }).exec();
-//         // const userIdObject = new mongoose.Types.ObjectId(userId);
-//         // const passwords = await PasswordModel.find({ userId }).exec();
-//         // const passwords = await PasswordModel.find({ userId: userIdObject }).exec();
-//         // const passwords = await PasswordModel.getPasswordByUserId(userIdObject);
-//         res.json(passwords);
-//     } catch (error) {
-//         console.error('Failed to retrieve passwords', error);
-//         res.status(500).send('Error retrieving passwords');
-//     }
-// });
-
+// Get a user by userId
 router.get('/users/:userId', async (req, res) => {
     const { userId } = req.params;
-    console.log('Fetching passwords for userId---:', userId);
 
     if (!mongoose.Types.ObjectId.isValid(userId)) {
         return res.status(400).send('Invalid user ID format');
@@ -64,10 +41,6 @@ router.get('/users/:userId', async (req, res) => {
     try {
         // const passwords = await PasswordModel.find({ userId });
         const passwords = await PasswordModel.getPasswordByUserId(userId);
-        // remove this!!!! so that even if the passwords for this user is 0, still 200 response
-        // if (passwords.length === 0) {
-        //     return res.status(404).json({ message: "No passwords found for this user." });
-        // }
         res.status(200).json(passwords);
     } catch (error) {
         console.error('Error retrieving passwords for userId:', userId, error);
@@ -91,7 +64,6 @@ router.get('/search/:url/:userId', async (req, res) => {
         }
 
         const password = await PasswordModel.getPasswordByUrl(url, userId);
-        // const password = await PasswordModel.getPasswordByUrl(url);
 
         if (password) {
             res.json(password);
@@ -118,16 +90,9 @@ router.post('/', async (req, res) => {
         const { userId, url, username, password } = req.body;
 
         // Check if a password entry with the same userId and URL already exists
-        console.log('111');
         // const existingEntry = await PasswordModel.findOne({ userId, url }); // not working
         const existingEntry = await PasswordModel.checkUniqueUrlUser(userId, url);
 
-        // const existingEntry = await PasswordModel.findOne({
-        //     userId: mongoose.Types.ObjectId(userId),
-        //     url: url
-        // });
-
-        console.log('222');
         if (existingEntry) {
             console.log('Duplicate url entries not allowed');
             return res.status(409).json({ message: 'An entry with this userId and URL already exists.' }); // has to return; otherwise, server will crash since res already sent status code
@@ -156,24 +121,13 @@ router.put('/:id', async (req, res) => {
     try {
         // check uniqueness of userId + url
         const existingPassword = await PasswordModel.getPasswordById(id);
-        console.log('existingPassword: ', existingPassword);
         const userId = existingPassword.userId;
-        // const url = existingPassword.url;
-
-        // Check for existing entries that match userId and URL but are not the current record
-        // const existingEntry = await PasswordModel.findOne({
-        //     userId: userId,
-        //     url: url,
-        //     _id: { $ne: id } // Exclude the current password record from the search
-        // });
-        console.log('input-hihihi');
-        console.log('userId - username - url - passwordId: ', userId, existingPassword.username, newPasswordData.url, id);
         const existingEntry = await PasswordModel.findRecordByUrlAndUserExcludeExisting(userId, newPasswordData.url, id);
-        console.log('input-existing entry: ', existingEntry);
         if (existingEntry) {
             console.log('Duplicate url entries not allowed, cannot update this entry!');
             return res.status(409).json({ message: 'Another entry with the same userId and URL already exists.' });
         }
+
         const updatedPassword = await PasswordModel.updatePassword(id, newPasswordData);
         if (updatedPassword) {
             res.json(updatedPassword);
@@ -190,10 +144,8 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
     const { id } = req.params;
     try {
-        // const deletePasswordResponse = await PasswordModel.deletePassword(id);
         await PasswordModel.deletePassword(id);
         res.send('The password record has been deleted!');
-        // res.status(200).send(deletePasswordResponse); // has to remove, otherwise the api will fail!!!!
     } catch (error) {
         console.error('Failed to fetch passwords for user:', error);
         res.status(500).json({ message: error.message });

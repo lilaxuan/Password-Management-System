@@ -12,17 +12,11 @@ const shareRequestSchema = new Schema({
         required: true,
         ref: 'User'
     },
-    // ownerUsername: {
-    //     type: String,
-    // },
     recipientId: {
         type: Schema.Types.ObjectId,
         required: true,
         ref: 'User'
     },
-    // recipientUsername: {
-    //     type: String,
-    // },
     status: {
         type: String,
         required: true,

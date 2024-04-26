@@ -6,12 +6,8 @@ import axios from 'axios';
 
 export default function ProfileSettingPage() {
     const { user } = useAuth();
-    // if (user) {
-    //     console.log('current user is: ', user);
-    //     console.log('current user username is: ', user.username);
-    // }
-
     const navigate = useNavigate();
+
     // hold the data in the form
     const [formData, setFormData] = useState({
         username: user ? user.username : '',
@@ -119,7 +115,7 @@ export default function ProfileSettingPage() {
                 </div>
 
 
-                <div className="form-group">
+                {/* <div className="form-group">
                     <label htmlFor="profileImage">Profile Image:</label>
                     <input
                         type="file"
@@ -128,7 +124,7 @@ export default function ProfileSettingPage() {
                         accept="image/*" // Allow only image files
                         onChange={handleImageChange}
                     />
-                </div>
+                </div> */}
 
                 <button type="submit">Save Changes</button>
             </form>

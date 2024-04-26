@@ -16,9 +16,6 @@ export default function RegisterPage() {
 
     const [users, setAllUsers] = useState([]);
 
-    // Dummy users list for demonstration. Replace this with your backend call.
-    // Todo: Retrive all users from database!!!! 
-    // const users = JSON.parse(localStorage.getItem('users')) || [];
     async function getAllUsers() {
         const response = await axios.get('/api/users');
         console.log('hihi-getAllUsers: ', response);
@@ -51,15 +48,11 @@ export default function RegisterPage() {
             return;
         }
 
-        // const newUser = { username, password };
         const newUser = { username, firstname, lastname, email, phone, password };
-        // Todo2: Insert the new user to the database
-        // users.push(newUser);
-        // localStorage.setItem('users', JSON.stringify(users));
-        // // Simulate user login
-        // localStorage.setItem('currentUser', JSON.stringify(newUser));
+        // Insert the new user to the database
         await axios.post('/api/users', newUser); // newUser will be passed in the reuqest body
-        navigate('/password-manager');
+        navigate('/login');
+        // navigate('/password-manager');
     };
 
     return (

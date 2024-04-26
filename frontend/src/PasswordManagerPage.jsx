@@ -13,10 +13,9 @@ export default function PasswordManagerPage() {
     const { user, login } = useAuth();
     const [url, setUrl] = useState('');
     const [password, setPassword] = useState([]);
-    const [passowrdsList, setPasswordsList] = useState([]); // the elements to be rendered on the page
-    const [passwordsListElement, setPasswordsListElement] = useState([]);
+    const [passowrdsList, setPasswordsList] = useState([]);
+    const [passwordsListElement, setPasswordsListElement] = useState([]); // the elements to be rendered on the page
     const [allUsers, setAllUsers] = useState([]);
-
     const [editingState, setEditingState] = useState(false);
     const [passwordId, setPasswordId] = useState('');
     const [error, setError] = useState('');
@@ -123,7 +122,6 @@ export default function PasswordManagerPage() {
 
     function onStart() {
         getAllPasswordsRecords();
-        // getAllUsers();
         getAllAcceptedPasswords();
         getPendingPasswordsList();
     }
@@ -204,19 +202,12 @@ export default function PasswordManagerPage() {
         setUrl(newUrl);
         setPassword(newPassword);
         setPasswordId(passwordRecordId);
-
-        // const userId = user._id;
-        // const username = user.username;
-        // const newPasswordRecord = { userId, newUrl, username, newPassword };
-        // await axios.put(`/api/passwords/${passwordRecordId}`, newPasswordRecord);
-        // console.log('finish updating!!');
-
     }
 
     async function deletePasswordRecord(passwordRecordId) {
         console.log('id is: ', passwordRecordId);
         console.log('start deleteing');
-        await axios.delete(`/api/passwords/${passwordRecordId}`);  // await axios.delete('/api/passwords/' + passwordRecordId);
+        await axios.delete(`/api/passwords/${passwordRecordId}`);
         console.log('The password record has been deleted successfully!');
         await getAllPasswordsRecords(); // cache exists so that we have to refresh the page to get the updated records!!!
         onCancel(); // clears input boxes
@@ -299,34 +290,20 @@ export default function PasswordManagerPage() {
         setPassword(newPassword);
     }
 
-    function daysAgo(dateString) {
-        const date = new Date(dateString);
-        const now = new Date();
-        const differenceInTime = now.getTime() - date.getTime();
-        const differenceInDays = Math.floor(differenceInTime / (1000 * 3600 * 24));
-        return differenceInDays;
-    }
-
     function formatDate(dateString) {
         const date = new Date(dateString);
         const year = date.getFullYear();
         const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Months are 0-indexed, pad with leading zero
         const day = date.getDate().toString().padStart(2, '0'); // Pad with leading zero
-
         return `${year}-${month}-${day}`;
     }
 
     function togglePasswordVisibility(id, initialVisibilityState) {
-        console.log('toggle clicked!');
         const pre = initialVisibilityState[id];
         initialVisibilityState[id] = !pre;
         console.log('updated initialVisibilityState: ', initialVisibilityState);
         setInitialVisibilityState(initialVisibilityState);
         getAllPasswordsRecords();
-        // setInitialVisibilityState(prevState => ({
-        //     ...prevState,
-        //     [id]: !prevState[id] // Toggle the visibility state for the specific ID
-        // }));
     };
 
 
@@ -397,8 +374,7 @@ export default function PasswordManagerPage() {
     async function handleAccept(selectedRecords) {
         console.log('Accepted Records - front end:', selectedRecords);
         for (let i = 0; i < selectedRecords.length; i++) {
-            const sharedReuqestId
-                = selectedRecords[i].sharedReuqestId;
+            const sharedReuqestId = selectedRecords[i].sharedReuqestId;
             const newShareReuqest = {
                 passwordId: selectedRecords[i].passwordId,
                 ownerId: selectedRecords[i].sharedUserId,
@@ -408,23 +384,21 @@ export default function PasswordManagerPage() {
             await axios.put(`/api/share/accept/${sharedReuqestId}`, newShareReuqest);
         }
         alert('Accepted the password share request');
-        // setModalOpen(false);
     };
 
     async function handleRefuse(selectedRecords) {
         console.log('Refused Records: - front end', selectedRecords);
         for (let i = 0; i < selectedRecords.length; i++) {
-            const shareRequestId = selectedRecords[i].shareRequestId;
+            const sharedReuqestId = selectedRecords[i].sharedReuqestId;
             const newShareReuqest = {
                 passwordId: selectedRecords[i].passwordId,
-                ownerId: selectedRecords[i].shareUsername,
+                ownerId: selectedRecords[i].sharedUserId,
                 recipientId: user._id,
                 status: "refused"
             }
-            await axios.put(`/api/share/refuse/${shareRequestId}`, newShareReuqest);
+            await axios.put(`/api/share/refuse/${sharedReuqestId}`, newShareReuqest);
         }
         alert('Accepted the password share request');
-        // setModalOpen(false);
     };
 
     function checkSharedPasswords() {
@@ -522,7 +496,6 @@ export default function PasswordManagerPage() {
             )}</div>
 
             <div>
-                {/* <button onClick={() => setModalOpen(true)}>Check Shared Passwords Request</button> */}
                 <button onClick={checkSharedPasswords}>Check Shared Passwords Request</button>
                 {modalOpen && (
                     <PasswordModal
