@@ -2,8 +2,9 @@
 Tech Stacks: React, Node & Express, JavaScript, MongoDB
 
 # Demo
+https://northeastern.zoom.us/rec/share/n6olWKlG8LK8E_s_1nfEWTJ7f0PL_gXefWz125kQgIj5vAttzK81UR505cziu8rh.qgm37O5QEMl5-TiO?startTime=1714174543000
+Passcode: T@aN7DD2
 
-![Alt text](<Screen Recording 2024-04-26 at 16.18.45 (1).gif>)
 
 ## 1. Front-end: Create the React App
 

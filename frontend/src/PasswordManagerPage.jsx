@@ -125,11 +125,13 @@ export default function PasswordManagerPage() {
             setError('Url cannot be empty!');
         }
 
-        if (isGenerateEnabled) {
-            if (passwordLength < 4 || passwordLength > 50) {
-                setError('Length must be between 4 and 50!');
-                return;
-            }
+        if (!isGenerateEnabled) {
+            setError("Please select at least one character type (Alphabet, Numerals, or Symbols).");
+        }
+
+        if (passwordLength < 4 || passwordLength > 50) {
+            setError('Length must be between 4 and 50!');
+            return;
         }
         // if (!isValidPassword(password)) {
         //     console.log('invalid password!');
@@ -215,7 +217,13 @@ export default function PasswordManagerPage() {
 
     function generatePassword() {
         if (!isGenerateEnabled) {
-            alert("Please select at least one character type (Alphabet, Numerals, or Symbols).");
+            // alert("Please select at least one character type (Alphabet, Numerals, or Symbols).");
+            setError("Please select at least one character type (Alphabet, Numerals, or Symbols).");
+            return;
+        }
+
+        if (passwordLength < 4 || passwordLength > 50) {
+            setError("Password length must be between 4 and 50 (inclusive)");
             return;
         }
 
