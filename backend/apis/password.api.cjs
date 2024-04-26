@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 const PasswordModel = require('../db/password.model.cjs');
-console.log(PasswordModel);
+console.log("Password Model: ", PasswordModel);
 
 
 // Get all password records in DB

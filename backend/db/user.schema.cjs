@@ -19,7 +19,7 @@ const userSchema = new Schema({
     username: {
         type: String,
         required: true,
-        unique: true // primary key
+        unique: true
     },
     firstname: {
         type: String,
@@ -45,7 +45,23 @@ const userSchema = new Schema({
         type: String,
         required: false,
         default: 'http://localhost:8000/default-avatar.png'
-    }
+    },
+    receivedPasswords: [{
+        passwordId: {
+            type: Schema.Types.ObjectId,
+            required: true,
+            ref: 'Password'
+        },
+        sharedUserId: {
+            type: Schema.Types.ObjectId,
+            required: true,
+            ref: 'User'
+        },
+        sharedUsername: {
+            type: String,
+            required: true
+        }
+    }]
 });
 
 // Mongoose will create a new model. This model will correspond to a collection named users in the MongoDB database 

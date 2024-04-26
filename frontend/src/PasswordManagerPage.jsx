@@ -315,6 +315,7 @@ export default function PasswordManagerPage() {
 
     async function handleShareSubmit(event) {
         event.preventDefault();
+
         if (shareUsername === user.username) {
             setShareError("Cannot share passwords with yourself.");
             return;
@@ -418,6 +419,9 @@ export default function PasswordManagerPage() {
                 <button type="submit">Share Passwords</button>
                 {shareError && <p style={{ color: 'red' }}>{shareError}</p>}
             </form>
+
+            <div className='title'> <h2>Passwords shared by other users</h2></div>
+            <div>placeholder</div>
 
         </div>
     );
