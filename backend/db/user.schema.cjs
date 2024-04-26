@@ -19,7 +19,8 @@ const userSchema = new Schema({
     username: {
         type: String,
         required: true,
-        unique: true
+        unique: true,
+        index: true // add an index so that we can query a User by username 
     },
     firstname: {
         type: String,
@@ -36,6 +37,12 @@ const userSchema = new Schema({
     email: {
         type: String,
         required: true,
+        // validate: {
+        //     validator: function(v) {
+        //         return /\S+@\S+\.\S+/.test(v);
+        //     },
+        //     message: props => `${props.value} is not a valid email!`
+        // }
     },
     password: {
         type: String,

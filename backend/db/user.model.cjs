@@ -16,6 +16,10 @@ function getUserById(id) {
     return UserModel.findById(id).exec();
 }
 
+function getUserByUsername(username) {
+    return UserModel.findOne({ username: username }).exec();
+}
+
 function deleteUser(id) {
     return UserModel.deleteOne({ _id: id })
 }
@@ -34,6 +38,7 @@ module.exports = {
     getAllUsers,
     insertUser,
     getUserById,
+    getUserByUsername,
     updateUser,
     deleteUser
 }

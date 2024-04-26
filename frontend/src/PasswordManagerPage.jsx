@@ -32,7 +32,6 @@ export default function PasswordManagerPage() {
     const [receivedPasswordsElements, setReceivedPasswordsElements] = useState([]);
 
 
-
     if (!user) {
         console.log('user is none ------');
         navigate('/login');
@@ -343,12 +342,23 @@ export default function PasswordManagerPage() {
         }
 
         try {
-            const response = await axios.post('/api/passwords/share', {
-                ownerId: user._id,
-                recipientUsername: shareUsername
-            });
-            if (response.status === 200) {
-                alert('Share request sent.');
+            // Use Post to create a new ShareRequest based on every selected passwords ids.
+            const response = await axios.get(`/api/users/by-username/${shareUsername}`);
+            const recipientUser = response.data;
+            console.log('recipientUser: ', recipientUser);
+            if (!recipientUser) {
+                setShareError('User Not Found!');
+            }
+            for (let i = 0; i < selectedSharePasswordIds.length; i++) {
+                const response = await axios.post('/api/share/send', {
+                    passwordId: selectedSharePasswordIds[i],
+                    ownerId: user._id,
+                    recipientId: recipientUser._id,
+                    status: "pending"
+                });
+                if (response.status === 200) {
+                    alert('Share request sent.');
+                }
             }
         } catch (error) {
             if (error.response && error.response.status === 404) {

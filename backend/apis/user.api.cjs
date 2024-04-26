@@ -28,6 +28,22 @@ router.get('/:id', async (req, res) => {
     }
 });
 
+// GET: Retrieve a user by username
+// http://localhost:8000/api/users/by-username/Eric 
+// the url has to be differeniated as the get request by user id!!! otherwise it'll always try to parse the username as an object id
+router.get('/by-username/:username', async (req, res) => {
+    try {
+        const user = await UserModel.getUserByUsername(req.params.username);
+        if (user) {
+            res.json(user);
+        } else {
+            res.status(404).send('User not found');
+        }
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
 // POST: Create a new user
 // http://localhost/8000/api/users
 // request body raw json data
