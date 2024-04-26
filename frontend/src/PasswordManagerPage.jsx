@@ -26,8 +26,8 @@ export default function PasswordManagerPage() {
     const [shareUsername, setShareUsername] = useState('');
     const [shareError, setShareError] = useState('');
     const [receivedPasswordsList, setReceivedPasswordsList] = useState([]);
-    const [receivedPasswordsElements, setReceivedPasswordsElements] = useState([]);
     const [acceptedPasswordsList, setAcceptedPasswordsList] = useState([]);
+    const [acceptedPasswordsElements, setAcceptedPasswordsElements] = useState([]);
     const [modalOpen, setModalOpen] = useState(false);
     const [pendingPasswordsList, setPendingPasswordsList] = useState([]);
 
@@ -54,19 +54,21 @@ export default function PasswordManagerPage() {
             //     password: allPasswordsRecords[i].password
             // };
             // passwordsListElement.push(newObj);
-            console.log('current - initialVisibilityState: ', initialVisibilityState);
             passwordsListElement.push(
                 <div className='password-list'>
                     <div className='flex-item-container'>
                         <p> {i + 1}. </p>
                         <label> {allPasswordsRecords[i].url} </label>
+
                         {/* <label>  {allPasswordsRecords[i].password} </label> */}
                         <label htmlFor={`passwordInput${allPasswordsRecords[i]._id}`}>
                             {initialVisibilityState[allPasswordsRecords[i]._id] ? allPasswordsRecords[i].password : '*******'}
                         </label>
+
                         <button onClick={() => togglePasswordVisibility(allPasswordsRecords[i]._id, initialVisibilityState)}>
                             {initialVisibilityState[allPasswordsRecords[i]._id] ? 'Hide' : 'Show'}
                         </button>
+
                         <button onClick={() => copyToClipboard(allPasswordsRecords[i].password)}>
                             Copy Password
                         </button>
@@ -83,7 +85,7 @@ export default function PasswordManagerPage() {
     }
 
     // Get all received passwords for the current user
-    async function getAllAcceptedPasswords() {
+    async function getAllAcceptedPasswords(event) {
         if (user) {
             const allRecievedPasswords = user.receivedPasswords;
             setAcceptedPasswordsList(allRecievedPasswords);
@@ -94,12 +96,13 @@ export default function PasswordManagerPage() {
                 if (allRecievedPasswords[i].status === "accepted") {
                     // in order to get the info of the shared password
                     const sharedPasswordObject = await axios.get(`/api/passwords/${allRecievedPasswords[i].passwordId}`)
+
                     allAcceptedPasswordsElements.push(
                         <div>{sharedPasswordObject.data.url} - {sharedPasswordObject.data.password} from {allRecievedPasswords[i].sharedUsername}</div>
                     )
                 }
             }
-            setReceivedPasswordsElements(allAcceptedPasswordsElements);
+            setAcceptedPasswordsElements(allAcceptedPasswordsElements);
         }
     }
 
@@ -111,7 +114,7 @@ export default function PasswordManagerPage() {
 
     useEffect(() => {
         onStart();
-    }, [user.receivedPasswords]);
+    }, [user]);
 
 
     async function handleSubmit(event) {
@@ -321,7 +324,7 @@ export default function PasswordManagerPage() {
     // status: "pending"
     // _id: "662c09163dfcd703a9cf00e3"
     async function handleAccept(selectedRecords) {
-        console.log('Accepted Records - front end:', selectedRecords);
+        console.log('Accepted Records:', selectedRecords);
         for (let i = 0; i < selectedRecords.length; i++) {
             const sharedReuqestId = selectedRecords[i].sharedReuqestId;
             const newShareReuqest = {
@@ -336,7 +339,7 @@ export default function PasswordManagerPage() {
     };
 
     async function handleRefuse(selectedRecords) {
-        console.log('Refused Records: - front end', selectedRecords);
+        console.log('Refused Records:', selectedRecords);
         for (let i = 0; i < selectedRecords.length; i++) {
             const sharedReuqestId = selectedRecords[i].sharedReuqestId;
             const newShareReuqest = {
@@ -351,7 +354,8 @@ export default function PasswordManagerPage() {
     };
 
     function checkSharedPasswords() {
-        getAllPasswordsRecords(); // every time updates the all received passwords 
+        getAllAcceptedPasswords(); // updates the accepted passwords often
+        getPendingPasswordsList(); // updates the pending passwords often
         setModalOpen(true);
     }
 
@@ -438,8 +442,8 @@ export default function PasswordManagerPage() {
             </form>
 
             <div className='title'> <h2>Passwords shared by other users</h2></div>
-            <div>{receivedPasswordsElements && receivedPasswordsElements.length > 0 ? (
-                receivedPasswordsElements
+            <div>{acceptedPasswordsElements && acceptedPasswordsElements.length > 0 ? (
+                acceptedPasswordsElements
             ) : (
                 <p>No passwords received from other users</p>
             )}</div>
@@ -469,3 +473,12 @@ export default function PasswordManagerPage() {
 //     }
 //     setAllUsers(allUsersList);
 // }
+
+// useEffect(() => {
+//     const intervalId = setInterval(() => {
+//         console.log('interval called!!');
+//         getPendingPasswordsList();
+//         getAllAcceptedPasswords();
+//     }, 3000); // every 3 second updates the pending passwords list, and accepted passwords element
+//     return () => clearInterval(intervalId);
+// }, []);
