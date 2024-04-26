@@ -356,7 +356,7 @@ export default function PasswordManagerPage() {
                     recipientId: recipientUser._id,
                     status: "pending"
                 });
-                if (response.status === 200) {
+                if (response.status === 201) {
                     alert('Share request sent.');
                 }
             }

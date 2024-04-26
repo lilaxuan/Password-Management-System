@@ -41,32 +41,34 @@ router.get('/:id', async (req, res) => {
 // }
 router.post('/send', async (req, res) => {
     try {
-        // const { passwordId, recipientId } = req.body;
-        // const ownerId = req.params.ownerId;
-        // const recipient = await UserModel.getUserById(recipientId);
-
-        const newShareReuqest = req.body;
-        console.log('newShareRequest: ', newShareReuqest);
+        const newShareRequest = req.body;
+        console.log('newShareRequest: ', newShareRequest);
         // Todo: check uniqueness of owner id and share id. 
-        await ShareRequestModel.createNewShareReuqest(newShareReuqest);
+        await ShareRequestModel.createNewShareReuqest(newShareRequest);
 
-        // console.log('ownerId: ', ownerId);
-        // console.log('receipientId: ', recipientId);
-        // console.log('recipient user: ', recipient);
+        // Save the shared password for the recipientUser (With pending status)
+        const recipientId = newShareRequest.recipientId;
+        const recipientUser = await UserModel.getUserById(recipientId);
+        if (!recipientUser) {
+            return res.status(404).send('Recipient user not found.');
+        }
 
-        // if (!recipient) {
-        //     return res.status(404).send('Recipient user not found.');
-        // }
+        const sharedUser = await UserModel.getUserById(newShareRequest.ownerId);
+        if (!sharedUser) {
+            return res.status(404).send('Share user not found.');
+        }
 
-        // const shareRequest = new ShareRequestModel({
-        //     passwordId,
-        //     ownerId,
-        //     recipientId: recipient._id,
-        //     status: 'pending'
-        // });
-        // console.log('the share request is: ', shareRequest);
-
-        // await shareRequest.save();
+        // Todo: check if this share request has been sent, no duplicated share request allowed
+        console.log("recipientUser111: ", recipientUser);
+        recipientUser.receivedPasswords.push({
+            passwordId: newShareRequest.passwordId,
+            sharedUserId: sharedUser._id,
+            sharedUsername: sharedUser.username,
+            status: 'pending'
+        });
+        console.log("recipientUser222: ", recipientUser);
+        await recipientUser.save(); // Directly save the model if using Mongoose; Sometimes need to delete some entries in the database, so that the save could work
+        console.log('Updated recipientUser: ', recipientUser);
         res.status(201).send('Share request sent.');
     } catch (error) {
         res.status(500).send('Error sending share request.');
@@ -90,18 +92,9 @@ router.put('/accept/:id', async (req, res) => {
         const newShareRequest = req.body;
         await ShareRequestModel.updateShareRequest(shareRequestId, newShareRequest);
 
-        // const recipientId = req.params.recipientId;
-        // const shareRequest = await ShareRequestModel.findOneAndUpdate({
-        //     _id: id,
-        //     // no ownerId needed? 
-        //     recipientId: recipientId,
-        //     status: 'pending'
-        // }, { status: 'accepted' }, { new: true });
-
-        // Save the accepted password for the recipientUser
+        // Update the received password status to 'accepted' for the recipientUser
         const recipientId = newShareRequest.recipientId
         const recipientUser = await UserModel.getUserById(recipientId);
-        console.log('recipientUser: ', recipientUser);
         if (!recipientUser) {
             return res.status(404).send('Recipient user not found.');
         }
@@ -109,31 +102,16 @@ router.put('/accept/:id', async (req, res) => {
         if (!sharedUser) {
             return res.status(404).send('Share user not found.');
         }
-
         recipientUser.receivedPasswords.push({
             passwordId: newShareRequest.passwordId,
             sharedUserId: sharedUser._id,
-            sharedUsername: sharedUser.username
+            sharedUsername: sharedUser.username,
+            status: "accepted"
         });
 
         await recipientUser.save(); // Directly save the model if using Mongoose
-
-
-        // console.log('recipientUser - current status1: ', recipientUser);
-        // const receivedPasswords = recipientUser.receivedPasswords;
-        // console.log('recipientUser - receivedPasswords: ', receivedPasswords);
-        // Update the recipientUser's receivedPasswords by calling the PUT API
-        // const updatedReceivedPasswords = { receivedPasswords: receivedPasswords };
-        // console.log('recipientId: ', recipientId);
-        // await axios.put(`/api/users/${recipientId}`, updatedReceivedPasswords);  // not working
-
-        console.log('recipientUser - current status2: ', recipientUser);
-
+        console.log('Updated recipientUser: ', recipientUser);
         res.send('Share request accepted and password saved.');
-
-        // if (!shareRequest) {
-        //     return res.status(404).send('Share request not found or already handled.');
-        // }
     } catch (error) {
         res.status(500).send('Error accepting share request.');
     }

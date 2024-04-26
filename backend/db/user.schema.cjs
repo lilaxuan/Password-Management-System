@@ -67,6 +67,11 @@ const userSchema = new Schema({
         sharedUsername: {
             type: String,
             required: true
+        },
+        status: {
+            type: String,
+            required: true,
+            enum: ['pending', 'accepted', 'refused']
         }
     }]
 });
