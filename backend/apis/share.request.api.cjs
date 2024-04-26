@@ -44,7 +44,10 @@ router.post('/send', async (req, res) => {
         const newShareRequest = req.body;
         console.log('newShareRequest: ', newShareRequest);
         // Todo: check uniqueness of owner id and share id. 
-        await ShareRequestModel.createNewShareReuqest(newShareRequest);
+        // await ShareRequestModel.createNewShareReuqest(newShareRequest);
+
+        const createdShareRequest = await ShareRequestModel.createNewShareRequest(newShareRequest);
+
 
         // Save the shared password for the recipientUser (With pending status)
         const recipientId = newShareRequest.recipientId;
@@ -60,7 +63,9 @@ router.post('/send', async (req, res) => {
 
         // Todo: check if this share request has been sent, no duplicated share request allowed
         console.log("recipientUser111: ", recipientUser);
+        console.log('hihihi- createdShareRequest: ', createdShareRequest);
         recipientUser.receivedPasswords.push({
+            sharedReuqestId: createdShareRequest._id,
             passwordId: newShareRequest.passwordId,
             sharedUserId: sharedUser._id,
             sharedUsername: sharedUser.username,
@@ -81,16 +86,17 @@ router.post('/send', async (req, res) => {
 // {
 //     "passwordId": "66298c8586fab88f27956df7",
 //     "ownerId" : "66200f4a97eeef38f24c2af6",
-//     "ownerUsername": "emma111",
 //     "recipientId": "6629fa6cd3ebb86812cf6ed6",
-//     "recipientUsername": "Eric",
 //     "status": "accepted"
 // }
 router.put('/accept/:id', async (req, res) => {
     try {
         const shareRequestId = req.params.id;
+        console.log("shareRequestId: ", shareRequestId);
         const newShareRequest = req.body;
         await ShareRequestModel.updateShareRequest(shareRequestId, newShareRequest);
+        console.log("udpated -11111: ", newShareRequest);
+
 
         // Update the received password status to 'accepted' for the recipientUser
         const recipientId = newShareRequest.recipientId
@@ -102,13 +108,30 @@ router.put('/accept/:id', async (req, res) => {
         if (!sharedUser) {
             return res.status(404).send('Share user not found.');
         }
-        recipientUser.receivedPasswords.push({
-            passwordId: newShareRequest.passwordId,
-            sharedUserId: sharedUser._id,
-            sharedUsername: sharedUser.username,
-            status: "accepted"
+
+        // cannot do this, since it will create a new entry in the received passwords
+        // recipientUser.receivedPasswords.push({
+        //     shareRequestId: shareRequestId,
+        //     passwordId: newShareRequest.passwordId,
+        //     sharedUserId: sharedUser._id,
+        //     sharedUsername: sharedUser.username,
+        //     status: "accepted"
+        // });
+
+        // Check if an entry exists with the shareRequestId
+        let entryFound = false;
+        recipientUser.receivedPasswords.forEach(password => {
+            if (password.sharedReuqestId.toString() === shareRequestId) {
+                password.status = "accepted";  // Update status to accepted
+                entryFound = true;
+            }
         });
 
+        // If no entry is found, optionally handle this as an error or add the entry
+        if (!entryFound) {
+            return res.status(404).send('No corresponding share request entry found in recipient.');
+        }
+        console.log('hihihi2-recipientUser: ', recipientUser);
         await recipientUser.save(); // Directly save the model if using Mongoose
         console.log('Updated recipientUser: ', recipientUser);
         res.send('Share request accepted and password saved.');
@@ -124,7 +147,7 @@ router.put('/accept/:id', async (req, res) => {
 // {
 //     "passwordId": "66298c8586fab88f27956df7",
 //     "ownerId" : "66200f4a97eeef38f24c2af6",
-//     "ownerUsername": "emma111",
+//     "ownerUsername": "emma",
 //     "recipientId": "6629fa6cd3ebb86812cf6ed6",
 //     "recipientUsername": "Eric",
 //     "status": "refused"
@@ -135,16 +158,31 @@ router.put('/refuse/:id', async (req, res) => {
         const shareRequestId = req.params.id;
         const newShareRequest = req.body;
         await ShareRequestModel.updateShareRequest(shareRequestId, newShareRequest);
-        // const recipientId = req.params.recipientId;
-        // const shareRequest = await ShareRequestModel.findOneAndUpdate({
-        //     _id: id,
-        //     recipientId: recipientId,
-        //     status: 'pending'
-        // }, { status: 'refused' }, { new: true });
+        // Update the received password status to 'refused' for the recipientUser
+        const recipientId = newShareRequest.recipientId
+        const recipientUser = await UserModel.getUserById(recipientId);
+        if (!recipientUser) {
+            return res.status(404).send('Recipient user not found.');
+        }
+        const sharedUser = await UserModel.getUserById(newShareRequest.ownerId);
+        if (!sharedUser) {
+            return res.status(404).send('Share user not found.');
+        }
 
-        // if (!shareRequest) {
-        //     return res.status(404).send('Share request not found or already handled.');
-        // }
+        let entryFound = false;
+        recipientUser.receivedPasswords.forEach(password => {
+            if (password.sharedReuqestId.toString() === shareRequestId) {
+                password.status = "refused";  // Update status to accepted
+                entryFound = true;
+            }
+        });
+
+        // If no entry is found, optionally handle this as an error or add the entry
+        if (!entryFound) {
+            return res.status(404).send('No corresponding share request entry found in recipient.');
+        }
+
+        await recipientUser.save(); // Directly save the model if using Mongoose
 
         res.send('Share request refused.');
     } catch (error) {

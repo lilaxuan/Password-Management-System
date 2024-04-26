@@ -24,11 +24,23 @@ function updateShareRequest(id, shareRequest) {
     return ShareRequestModel.findOneAndUpdate({ _id: id }, shareRequest)
 }
 
+// since we need to get the id right after the shareReuqest is created, so that we can define this method here!! 
+async function createNewShareRequest(data) {
+    try {
+        const shareRequest = await ShareRequestModel.create(data);
+        return shareRequest;  // This returns the created document with its _id
+    } catch (error) {
+        console.error("Failed to create share request:", error);
+        throw error;  // Re-throw the error to be handled by the caller
+    }
+}
+
 
 module.exports = {
     createNewShareReuqest,
     getAllShareRequests,
     getShareReuqestById,
     deleteShareReuqest,
-    updateShareRequest
+    updateShareRequest,
+    createNewShareRequest
 }

@@ -54,6 +54,11 @@ const userSchema = new Schema({
         default: 'http://localhost:8000/default-avatar.png'
     },
     receivedPasswords: [{
+        sharedReuqestId: {
+            type: Schema.Types.ObjectId,
+            required: true,
+            ref: 'ShareRequest'
+        },
         passwordId: {
             type: Schema.Types.ObjectId,
             required: true,

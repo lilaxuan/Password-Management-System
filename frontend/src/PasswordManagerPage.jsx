@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthContext';
 import axios from 'axios';
 import './PasswordManagerPage.css';
+import PasswordModal from './PasswordModal';
 
 
 export default function PasswordManagerPage() {
@@ -28,8 +29,12 @@ export default function PasswordManagerPage() {
     const [selectedSharePasswordIds, setShareSelectedPasswordIds] = useState([]);
     const [shareUsername, setShareUsername] = useState('');
     const [shareError, setShareError] = useState('');
-    const [receivedPasswords, setReceivedPasswords] = useState([]);
+    const [receivedPasswordsList, setReceivedPasswordsList] = useState([]);
     const [receivedPasswordsElements, setReceivedPasswordsElements] = useState([]);
+    const [acceptedPasswordsList, setAcceptedPasswordsList] = useState([]);
+    const [modalOpen, setModalOpen] = useState(false);
+    const [pendingPasswordsList, setPendingPasswordsList] = useState([]);
+
 
 
     if (!user) {
@@ -39,18 +44,13 @@ export default function PasswordManagerPage() {
     }
 
     async function getAllPasswordsRecords() {
-        console.log('in getAllPasswordsRecords')
         if (!user) {
-            console.log('getAllPasswordsRecords cannot be completed since user is null');
             navigate('/login');
             return null;
         }
 
-        console.log('current user - getAllPasswordsRecords: ', user);
         const userId = user._id;
-        console.log('userid - getAllPasswordsRecords: ', userId);
         const response = await axios.get(`/api/passwords/users/${userId}`);
-        console.log('allPasswordsRecords is - getAllPasswordsRecords: ', response);
         const allPasswordsRecords = response.data;
 
         // Password records elements
@@ -100,32 +100,37 @@ export default function PasswordManagerPage() {
     //     setAllUsers(allUsersList);
     // }
 
-    async function getAllRecievedPasswords() {
+    // Get all received passwords for the current user
+    async function getAllAcceptedPasswords() {
         if (user) {
             const allRecievedPasswords = user.receivedPasswords;
-            setReceivedPasswords(allRecievedPasswords);
-            const allRecievedPasswordsElements = [];
+            setAcceptedPasswordsList(allRecievedPasswords);
+
+            const allAcceptedPasswordsElements = [];
             for (let i = 0; i < allRecievedPasswords.length; i++) {
-                console.log("allRecievedPasswords[i].passwordId: ", allRecievedPasswords[i].passwordId);
-                const sharedPasswordObject = await axios.get(`/api/passwords/${allRecievedPasswords[i].passwordId}`)
-                console.log('sharedPasswordObject: ', sharedPasswordObject);
-                allRecievedPasswordsElements.push(
-                    <div>{sharedPasswordObject.data.url} - {sharedPasswordObject.data.password} from {allRecievedPasswords[i].sharedUsername}</div>
-                )
+                // only display passwords that are accepted
+                if (allRecievedPasswords[i].status === "accepted") {
+                    // in order to get the info of the shared password
+                    const sharedPasswordObject = await axios.get(`/api/passwords/${allRecievedPasswords[i].passwordId}`)
+                    allAcceptedPasswordsElements.push(
+                        <div>{sharedPasswordObject.data.url} - {sharedPasswordObject.data.password} from {allRecievedPasswords[i].sharedUsername}</div>
+                    )
+                }
             }
-            setReceivedPasswordsElements(allRecievedPasswordsElements);
+            setReceivedPasswordsElements(allAcceptedPasswordsElements);
         }
     }
 
     function onStart() {
         getAllPasswordsRecords();
         // getAllUsers();
-        getAllRecievedPasswords();
+        getAllAcceptedPasswords();
+        getPendingPasswordsList();
     }
 
     useEffect(() => {
         onStart();
-    }, []);
+    }, [user.receivedPasswords]);
 
 
 
@@ -369,6 +374,64 @@ export default function PasswordManagerPage() {
         }
     };
 
+    function getPendingPasswordsList() {
+        if (user) {
+            const receivedPasswordsList = user.receivedPasswords;
+            const pendingPasswordsList = [];
+            for (let i = 0; i < receivedPasswordsList.length; i++) {
+                if (receivedPasswordsList[i].status === 'pending') {
+                    pendingPasswordsList.push(receivedPasswordsList[i]);
+                }
+            }
+            setPendingPasswordsList(pendingPasswordsList);
+        }
+    }
+
+    // Updates the status of the share request
+    // passwordId: "66298e13ae75e6d508856093"
+    // sharedReuqestId: "662c09163dfcd703a9cf00de"
+    // sharedUserId: "66200f4a97eeef38f24c2af6"
+    // sharedUsername: "emma"
+    // status: "pending"
+    // _id: "662c09163dfcd703a9cf00e3"
+    async function handleAccept(selectedRecords) {
+        console.log('Accepted Records - front end:', selectedRecords);
+        for (let i = 0; i < selectedRecords.length; i++) {
+            const sharedReuqestId
+                = selectedRecords[i].sharedReuqestId;
+            const newShareReuqest = {
+                passwordId: selectedRecords[i].passwordId,
+                ownerId: selectedRecords[i].sharedUserId,
+                recipientId: user._id,
+                status: "accepted"
+            }
+            await axios.put(`/api/share/accept/${sharedReuqestId}`, newShareReuqest);
+        }
+        alert('Accepted the password share request');
+        // setModalOpen(false);
+    };
+
+    async function handleRefuse(selectedRecords) {
+        console.log('Refused Records: - front end', selectedRecords);
+        for (let i = 0; i < selectedRecords.length; i++) {
+            const shareRequestId = selectedRecords[i].shareRequestId;
+            const newShareReuqest = {
+                passwordId: selectedRecords[i].passwordId,
+                ownerId: selectedRecords[i].shareUsername,
+                recipientId: user._id,
+                status: "refused"
+            }
+            await axios.put(`/api/share/refuse/${shareRequestId}`, newShareReuqest);
+        }
+        alert('Accepted the password share request');
+        // setModalOpen(false);
+    };
+
+    function checkSharedPasswords() {
+        getAllPasswordsRecords(); // every time updates the all received passwords 
+        setModalOpen(true);
+    }
+
     return (
         <div className='password-manager-page' >
             <div className='title'>
@@ -452,7 +515,24 @@ export default function PasswordManagerPage() {
             </form>
 
             <div className='title'> <h2>Passwords shared by other users</h2></div>
-            <div>{receivedPasswordsElements}</div>
+            <div>{receivedPasswordsElements && receivedPasswordsElements.length > 0 ? (
+                receivedPasswordsElements
+            ) : (
+                <p>No passwords received from other users</p>
+            )}</div>
+
+            <div>
+                {/* <button onClick={() => setModalOpen(true)}>Check Shared Passwords Request</button> */}
+                <button onClick={checkSharedPasswords}>Check Shared Passwords Request</button>
+                {modalOpen && (
+                    <PasswordModal
+                        pendingPasswordRecords={pendingPasswordsList}
+                        onClose={() => setModalOpen(false)}
+                        onAccept={handleAccept}
+                        onRefuse={handleRefuse}
+                    />
+                )}
+            </div>
 
         </div>
     );
