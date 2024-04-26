@@ -79,7 +79,9 @@ router.post('/send', async (req, res) => {
 // {
 //     "passwordId": "66298c8586fab88f27956df7",
 //     "ownerId" : "66200f4a97eeef38f24c2af6",
+//     "ownerUsername": "emma111",
 //     "recipientId": "6629fa6cd3ebb86812cf6ed6",
+//     "recipientUsername": "Eric",
 //     "status": "accepted"
 // }
 router.put('/accept/:id', async (req, res) => {
@@ -97,7 +99,8 @@ router.put('/accept/:id', async (req, res) => {
         // }, { status: 'accepted' }, { new: true });
 
         // Save the accepted password for the recipientUser
-        const recipientUser = await UserModel.getUserById(newShareRequest.recipientId);
+        const recipientId = newShareRequest.recipientId
+        const recipientUser = await UserModel.getUserById(recipientId);
         console.log('recipientUser: ', recipientUser);
         if (!recipientUser) {
             return res.status(404).send('Recipient user not found.');
@@ -106,15 +109,25 @@ router.put('/accept/:id', async (req, res) => {
         if (!sharedUser) {
             return res.status(404).send('Share user not found.');
         }
+
         recipientUser.receivedPasswords.push({
             passwordId: newShareRequest.passwordId,
             sharedUserId: sharedUser._id,
             sharedUsername: sharedUser.username
         });
 
-        console.log('recipientUser: ', recipientUser);
+        await recipientUser.save(); // Directly save the model if using Mongoose
 
-        // await recipientUser.save();
+
+        // console.log('recipientUser - current status1: ', recipientUser);
+        // const receivedPasswords = recipientUser.receivedPasswords;
+        // console.log('recipientUser - receivedPasswords: ', receivedPasswords);
+        // Update the recipientUser's receivedPasswords by calling the PUT API
+        // const updatedReceivedPasswords = { receivedPasswords: receivedPasswords };
+        // console.log('recipientId: ', recipientId);
+        // await axios.put(`/api/users/${recipientId}`, updatedReceivedPasswords);  // not working
+
+        console.log('recipientUser - current status2: ', recipientUser);
 
         res.send('Share request accepted and password saved.');
 
@@ -133,8 +146,10 @@ router.put('/accept/:id', async (req, res) => {
 // {
 //     "passwordId": "66298c8586fab88f27956df7",
 //     "ownerId" : "66200f4a97eeef38f24c2af6",
+//     "ownerUsername": "emma111",
 //     "recipientId": "6629fa6cd3ebb86812cf6ed6",
-//     "status": "refuse"
+//     "recipientUsername": "Eric",
+//     "status": "refused"
 // }
 router.put('/refuse/:id', async (req, res) => {
 

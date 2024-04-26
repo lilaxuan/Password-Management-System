@@ -28,6 +28,9 @@ export default function PasswordManagerPage() {
     const [selectedSharePasswordIds, setShareSelectedPasswordIds] = useState([]);
     const [shareUsername, setShareUsername] = useState('');
     const [shareError, setShareError] = useState('');
+    const [receivedPasswords, setReceivedPasswords] = useState([]);
+    const [receivedPasswordsElements, setReceivedPasswordsElements] = useState([]);
+
 
 
     if (!user) {
@@ -98,9 +101,27 @@ export default function PasswordManagerPage() {
     //     setAllUsers(allUsersList);
     // }
 
+    async function getAllRecievedPasswords() {
+        if (user) {
+            const allRecievedPasswords = user.receivedPasswords;
+            setReceivedPasswords(allRecievedPasswords);
+            const allRecievedPasswordsElements = [];
+            for (let i = 0; i < allRecievedPasswords.length; i++) {
+                console.log("allRecievedPasswords[i].passwordId: ", allRecievedPasswords[i].passwordId);
+                const sharedPasswordObject = await axios.get(`/api/passwords/${allRecievedPasswords[i].passwordId}`)
+                console.log('sharedPasswordObject: ', sharedPasswordObject);
+                allRecievedPasswordsElements.push(
+                    <div>{sharedPasswordObject.data.url} - {sharedPasswordObject.data.password} from {allRecievedPasswords[i].sharedUsername}</div>
+                )
+            }
+            setReceivedPasswordsElements(allRecievedPasswordsElements);
+        }
+    }
+
     function onStart() {
         getAllPasswordsRecords();
         // getAllUsers();
+        getAllRecievedPasswords();
     }
 
     useEffect(() => {
@@ -421,7 +442,7 @@ export default function PasswordManagerPage() {
             </form>
 
             <div className='title'> <h2>Passwords shared by other users</h2></div>
-            <div>placeholder</div>
+            <div>{receivedPasswordsElements}</div>
 
         </div>
     );
