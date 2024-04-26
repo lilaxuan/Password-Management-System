@@ -1,6 +1,9 @@
 # Full Stack Password Management System
 Tech Stacks: React, Node & Express, JavaScript, MongoDB
 
+# Demo
+
+![Alt text](<Screen Recording 2024-04-26 at 16.18.45.gif>)
 
 
 ## 1. Front-end: Create the React App
