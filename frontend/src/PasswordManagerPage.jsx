@@ -8,14 +8,11 @@ import PasswordModal from './PasswordModal';
 
 export default function PasswordManagerPage() {
     const navigate = useNavigate(); // navigate accross different pages.
-    // Todo: retrieve the current user
-    // const currentUser = JSON.parse(localStorage.getItem('currentUser'));
     const { user, login } = useAuth();
     const [url, setUrl] = useState('');
     const [password, setPassword] = useState([]);
     const [passowrdsList, setPasswordsList] = useState([]);
     const [passwordsListElement, setPasswordsListElement] = useState([]); // the elements to be rendered on the page
-    const [allUsers, setAllUsers] = useState([]);
     const [editingState, setEditingState] = useState(false);
     const [passwordId, setPasswordId] = useState('');
     const [error, setError] = useState('');
@@ -34,10 +31,7 @@ export default function PasswordManagerPage() {
     const [modalOpen, setModalOpen] = useState(false);
     const [pendingPasswordsList, setPendingPasswordsList] = useState([]);
 
-
-
     if (!user) {
-        console.log('user is none ------');
         navigate('/login');
         return null;
     }
@@ -84,20 +78,9 @@ export default function PasswordManagerPage() {
                     </div>
                 </div >);
         }
-        console.log('passwordsListElement: ', passwordsListElement);
-        console.log('password show visiblity: ', initialVisibilityState);
         setPasswordsList(allPasswordsRecords);
         setPasswordsListElement(passwordsListElement);
     }
-
-    // async function getAllUsers() {
-    //     const allUsersObject = await axios.get('/api/users');
-    //     const allUsersList = []
-    //     for (let i = 0; i < allUsersObject.length; i++) {
-    //         allUsersList.push(allUsersObject[i].username);
-    //     }
-    //     setAllUsers(allUsersList);
-    // }
 
     // Get all received passwords for the current user
     async function getAllAcceptedPasswords() {
@@ -129,7 +112,6 @@ export default function PasswordManagerPage() {
     useEffect(() => {
         onStart();
     }, [user.receivedPasswords]);
-
 
 
     async function handleSubmit(event) {
@@ -219,39 +201,6 @@ export default function PasswordManagerPage() {
         const hasSpecialChar = /[!@#$%^&*./]/.test(password);
         return hasLetter && hasNumber && hasSpecialChar && password.length >= 8;
     }
-
-    // Autogenerate password
-    // function generatePassword() {
-    //     const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-    //     const numbers = '0123456789';
-    //     const specialChars = '!@#$%^&*./';
-
-    //     // Create a random password that meets the requirements
-    //     const randomLetter = letters[Math.floor(Math.random() * letters.length)];
-    //     const randomNumber = numbers[Math.floor(Math.random() * numbers.length)];
-    //     const randomSpecial = specialChars[Math.floor(Math.random() * specialChars.length)];
-
-    //     // Mix them and create a longer password
-    //     const base = randomLetter + randomNumber + randomSpecial;
-    //     let newPassword = base;
-
-    //     // Shuffle the base to make it less predictable
-    //     newPassword += shuffle(base + letters + numbers + specialChars);
-
-    //     // Set the first 12 characters as the password
-    //     setPassword(newPassword.substring(0, 12));
-    // }
-
-    // // Shuffle the characters in the password
-    // function shuffle(string) {
-    //     let parts = string.split('');
-    //     for (let i = parts.length - 1; i > 0; i--) {
-    //         const j = Math.floor(Math.random() * (i + 1));
-    //         [parts[i], parts[j]] = [parts[j], parts[i]];
-    //     }
-    //     return parts.join('');
-    // }
-
 
     useEffect(() => {
         updateGenerateButtonState();
@@ -510,3 +459,13 @@ export default function PasswordManagerPage() {
         </div>
     );
 }
+
+
+// async function getAllUsers() {
+//     const allUsersObject = await axios.get('/api/users');
+//     const allUsersList = []
+//     for (let i = 0; i < allUsersObject.length; i++) {
+//         allUsersList.push(allUsersObject[i].username);
+//     }
+//     setAllUsers(allUsersList);
+// }
