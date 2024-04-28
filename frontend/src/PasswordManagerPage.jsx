@@ -358,7 +358,7 @@ export default function PasswordManagerPage() {
             }
             await axios.put(`/api/share/refuse/${sharedReuqestId}`, newShareReuqest);
         }
-        alert('Accepted the password share request');
+        alert('Refused the password share request!');
     };
 
     function checkSharedPasswords() {
